@@ -3,4 +3,4 @@ Allow: /
 Disallow: /api/
 Disallow: /admin/
 
-Sitemap: https://sheetsmith.co.th/sitemap-index.xml
+Sitemap: https://sheetsmith.org/sitemap-index.xml

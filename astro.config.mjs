@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://sheetsmith.co.th',
+  site: 'https://sheetsmith.org',
   integrations: [
     sitemap({
       changefreq: 'weekly',
