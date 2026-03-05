@@ -1,0 +1,94 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CTABanner from '../components/CTABanner.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  publishDate: Date;
+  updatedDate?: Date;
+  author?: string;
+  category: string;
+  tags: string[];
+  image?: string;
+}
+
+const { title, description, publishDate, updatedDate, author = 'SheetSmith Team', category, tags, image } = Astro.props;
+
+const categoryLabels: Record<string, string> = {
+  por1: 'สอบเข้า ป.1',
+  mor1: 'สอบเข้า ม.1',
+  mor4: 'สอบเข้า ม.4',
+  general: 'ทั่วไป',
+  tips: 'เทคนิค',
+};
+
+const categoryHrefs: Record<string, string> = {
+  por1: '/exams/por1/',
+  mor1: '/exams/mor1/',
+  mor4: '/exams/mor4/',
+  general: '/blog/',
+  tips: '/blog/',
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: title,
+  description,
+  author: { '@type': 'Person', name: author },
+  publisher: {
+    '@type': 'Organization',
+    name: 'SheetSmith',
+    url: Astro.site?.toString(),
+  },
+  datePublished: publishDate.toISOString(),
+  ...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+  ...(image ? { image: new URL(image, Astro.site).toString() } : {}),
+};
+---
+
+<BaseLayout title={title} description={description} type="article" publishDate={publishDate} updatedDate={updatedDate} image={image}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'บทความ', href: '/blog/' },
+      { label: categoryLabels[category] || category, href: categoryHrefs[category] || '/blog/' },
+      { label: title },
+    ]} />
+
+    <article>
+      <header class="mb-8">
+        <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-4">{title}</h1>
+        <div class="flex items-center gap-4 text-sm text-text-light">
+          <span>{author}</span>
+          <span>|</span>
+          <time datetime={publishDate.toISOString()}>
+            {publishDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </time>
+          {updatedDate && (
+            <>
+              <span>|</span>
+              <span>อัปเดต: {updatedDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </>
+          )}
+        </div>
+        {tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {tags.map((tag) => (
+              <span class="px-2 py-1 bg-gray-100 text-text-light text-xs rounded-md">{tag}</span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <div class="prose max-w-none">
+        <slot />
+      </div>
+    </article>
+
+    <CTABanner />
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+</BaseLayout>

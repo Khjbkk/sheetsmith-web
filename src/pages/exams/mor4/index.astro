@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import ExamCard from '../../../components/ExamCard.astro';
+import FAQSection from '../../../components/FAQSection.astro';
+import CTABanner from '../../../components/CTABanner.astro';
+import { getCollection } from 'astro:content';
+
+const exams = (await getCollection('exams'))
+  .filter((e) => e.data.level === 'mor4')
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const freeExams = exams.filter((e) => e.data.isFree);
+
+const subjects = [
+  { name: 'คณิตศาสตร์', icon: '📐', desc: 'พีชคณิต เรขาคณิต ตรีโกณมิติ แคลคูลัสเบื้องต้น' },
+  { name: 'ฟิสิกส์', icon: '⚡', desc: 'กลศาสตร์ คลื่น ไฟฟ้า แม่เหล็ก' },
+  { name: 'เคมี', icon: '🧪', desc: 'อะตอม ตารางธาตุ ปฏิกิริยาเคมี สมดุลเคมี' },
+  { name: 'ชีววิทยา', icon: '🧬', desc: 'เซลล์ พันธุศาสตร์ นิเวศวิทยา สรีรวิทยา' },
+  { name: 'ภาษาอังกฤษ', icon: '🔤', desc: 'Advanced Grammar, Reading Comprehension, Writing' },
+  { name: 'ภาษาไทย-สังคม', icon: '📚', desc: 'หลักภาษา วรรณคดี ประวัติศาสตร์ เศรษฐศาสตร์' },
+];
+
+const faqItems = [
+  {
+    question: 'สอบเข้า ม.4 เตรียมอุดมสอบอะไรบ้าง?',
+    answer: 'โรงเรียนเตรียมอุดมศึกษาสอบ 5 วิชา ได้แก่ คณิตศาสตร์ วิทยาศาสตร์ (ฟิสิกส์ เคมี ชีวะ) ภาษาอังกฤษ ภาษาไทย และสังคมศึกษา คะแนนรวมจากทุกวิชาจะใช้ในการจัดลำดับคัดเลือก',
+  },
+  {
+    question: 'คะแนนสอบเข้าเตรียมอุดมเท่าไหร่ถึงจะติด?',
+    answer: 'คะแนนตัด (cut-off) ของเตรียมอุดมแต่ละปีจะแตกต่างกันไปตามจำนวนผู้สมัครและความยากของข้อสอบ โดยทั่วไปต้องได้คะแนนรวมประมาณ 65-75% ขึ้นไป แต่สายวิทย์-คณิตมักต้องการคะแนนสูงกว่าสายอื่น',
+  },
+  {
+    question: 'เตรียมอุดมกับมหิดลวิทยานุสรณ์ต่างกันอย่างไร?',
+    answer: 'เตรียมอุดมเป็นโรงเรียนที่มีหลายสาย (วิทย์-คณิต, ศิลป์-ภาษา ฯลฯ) ส่วนมหิดลวิทยานุสรณ์เน้นวิทยาศาสตร์โดยเฉพาะ ข้อสอบมหิดลจะเน้นวิทย์-คณิตมากกว่า และมีการสอบรอบแรก (ข้อเขียน) กับรอบสอง (สอบปฏิบัติ)',
+  },
+  {
+    question: 'ควรเริ่มเตรียมสอบเข้า ม.4 เมื่อไหร่?',
+    answer: 'ควรเริ่มเตรียมตัวอย่างจริงจังตั้งแต่ ม.2 หรืออย่างช้า ม.3 ต้นเทอม โดยเริ่มจากการปูพื้นฐานวิชาที่อ่อน แล้วค่อยฝึกทำข้อสอบเก่าเมื่อพื้นฐานแน่นแล้ว',
+  },
+];
+---
+
+<BaseLayout
+  title="ข้อสอบเข้า ม.4 — รวมแนวข้อสอบเตรียมอุดม มหิดลวิทยานุสรณ์"
+  description="รวมตัวอย่างข้อสอบเข้า ม.4 เตรียมอุดม มหิดลวิทยานุสรณ์ พร้อมเฉลยละเอียด แนวข้อสอบคณิต ฟิสิกส์ เคมี ชีวะ อังกฤษ"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'ข้อสอบ', href: '/exams/' },
+      { label: 'สอบเข้า ม.4' },
+    ]} />
+
+    <header class="mb-12">
+      <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-4">
+        ข้อสอบเข้า ม.4 — รวมแนวข้อสอบเตรียมอุดม มหิดลวิทยานุสรณ์
+      </h1>
+      <div class="prose max-w-none text-text-light">
+        <p>
+          การสอบเข้า ม.4 ของโรงเรียนชั้นนำอย่างเตรียมอุดมศึกษา มหิดลวิทยานุสรณ์ สาธิตจุฬา และโรงเรียนดังอื่นๆ เป็นการสอบที่มีการแข่งขันสูงที่สุดระดับหนึ่ง ข้อสอบมีความยากและซับซ้อน ต้องใช้ทั้งความรู้พื้นฐานที่แน่นและทักษะการคิดวิเคราะห์
+        </p>
+        <p>
+          SheetSmith รวบรวมแนวข้อสอบจากสนามสอบจริง ครบทุกวิชา พร้อมเฉลยละเอียดแบบ step-by-step ที่ช่วยให้นักเรียนเข้าใจวิธีคิดและสามารถประยุกต์กับโจทย์ลักษณะเดียวกันได้
+        </p>
+      </div>
+    </header>
+
+    <!-- วิชาที่สอบ -->
+    <section class="mb-12">
+      <h2 class="font-heading text-2xl font-bold text-text mb-6">วิชาที่สอบเข้า ม.4</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {subjects.map((s) => (
+          <div class="bg-white border border-border rounded-xl p-5 hover:shadow-md transition-shadow">
+            <div class="text-3xl mb-3">{s.icon}</div>
+            <h3 class="font-heading font-semibold text-text mb-1">{s.name}</h3>
+            <p class="text-sm text-text-light">{s.desc}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ตัวอย่างข้อสอบฟรี -->
+    {freeExams.length > 0 && (
+      <section class="mb-12">
+        <h2 class="font-heading text-2xl font-bold text-text mb-6">ตัวอย่างข้อสอบเข้า ม.4 ฟรี</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {freeExams.map((exam) => (
+            <ExamCard
+              title={exam.data.title}
+              description={exam.data.description}
+              level={exam.data.level}
+              subject={exam.data.subject}
+              questionCount={exam.data.questionCount}
+              difficulty={exam.data.difficulty}
+              isFree={exam.data.isFree}
+              href={`/exams/mor4/${exam.id}/`}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- คู่มือเตรียมสอบ -->
+    <section class="mb-12">
+      <h2 class="font-heading text-2xl font-bold text-text mb-4">คู่มือเตรียมสอบเข้า ม.4</h2>
+      <div class="bg-white border border-border rounded-xl p-6">
+        <ul class="space-y-3">
+          <li>
+            <a href="/guides/how-to-prepare-mor4/" class="text-primary hover:text-primary-dark font-medium transition-colors">
+              คู่มือเตรียมสอบเข้า ม.4 เตรียมอุดม/มหิดล ฉบับสมบูรณ์ &rarr;
+            </a>
+          </li>
+          <li>
+            <a href="/blog/" class="text-primary hover:text-primary-dark font-medium transition-colors">
+              บทความเทคนิคการสอบ ม.4 &rarr;
+            </a>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <FAQSection title="คำถามที่พบบ่อยเกี่ยวกับสอบเข้า ม.4" items={faqItems} />
+
+    <!-- CTA -->
+    <CTABanner
+      title="เริ่มเตรียมสอบเข้า ม.4 วันนี้"
+      description="ดาวน์โหลดตัวอย่างข้อสอบฟรี ฝึกทำให้พร้อมก่อนวันสอบจริง"
+      buttonText="ดูตัวอย่างข้อสอบฟรี"
+      buttonHref="/exams/"
+    />
+  </div>
+</BaseLayout>

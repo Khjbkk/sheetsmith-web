@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CTABanner from '../components/CTABanner.astro';
+---
+
+<BaseLayout
+  title="เกี่ยวกับ SheetSmith"
+  description="SheetSmith คือแบรนด์ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียดทุกข้อ"
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: 'เกี่ยวกับเรา' }]} />
+
+    <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-6">เกี่ยวกับ SheetSmith</h1>
+
+    <div class="prose max-w-none">
+      <p>
+        <strong>SheetSmith</strong> เกิดจากความเชื่อที่ว่า ทุกครอบครัวควรมีโอกาสเข้าถึงข้อสอบเตรียมสอบเข้าที่มีคุณภาพ โดยไม่จำเป็นต้องเสียค่าติวแพงๆ
+      </p>
+
+      <h2>เราทำอะไร?</h2>
+      <p>
+        เรารวบรวมและจัดทำตัวอย่างข้อสอบเตรียมสอบเข้า <strong>ป.1 ม.1 ม.4</strong> จากโรงเรียนสาธิตและโรงเรียนชั้นนำทั่วประเทศ ทุกชุดข้อสอบมาพร้อมเฉลยละเอียดที่อธิบายวิธีคิดแบบ step-by-step
+      </p>
+
+      <h2>ทำไมต้อง SheetSmith?</h2>
+      <ul>
+        <li><strong>ข้อสอบจากสนามจริง</strong> — แนวข้อสอบที่อ้างอิงจากสนามสอบจริง ไม่ใช่ข้อสอบที่แต่งขึ้นเอง</li>
+        <li><strong>เฉลยละเอียดทุกข้อ</strong> — ไม่ใช่แค่เฉลยคำตอบ แต่อธิบายวิธีคิดทุกขั้นตอน</li>
+        <li><strong>อัปเดตทุกปี</strong> — ข้อสอบอัปเดตตามหลักสูตรและแนวข้อสอบล่าสุด</li>
+        <li><strong>ราคาเข้าถึงได้</strong> — ตัวอย่างฟรีให้ลองทำ และชุดเต็มในราคาที่เหมาะสม</li>
+      </ul>
+
+      <h2>เป้าหมายของเรา</h2>
+      <p>
+        เราต้องการเป็นแหล่งข้อมูลที่ผู้ปกครองและนักเรียนไว้วางใจ ในการเตรียมความพร้อมสอบเข้าโรงเรียนชั้นนำ ไม่ว่าจะเป็นระดับ ป.1 ม.1 หรือ ม.4 เราเชื่อว่าการฝึกทำข้อสอบอย่างสม่ำเสมอ ประกอบกับเฉลยที่ดี จะช่วยให้นักเรียนมั่นใจและพร้อมมากขึ้น
+      </p>
+
+      <h2>ติดต่อเรา</h2>
+      <p>
+        หากมีคำถามหรือข้อเสนอแนะ สามารถติดต่อเราได้ที่:
+      </p>
+      <ul>
+        <li>LINE: <strong>@sheetsmith</strong></li>
+        <li>Facebook: <strong>SheetSmith</strong></li>
+        <li>Email: <strong>info@sheetsmith.co.th</strong></li>
+      </ul>
+    </div>
+
+    <CTABanner />
+  </div>
+</BaseLayout>

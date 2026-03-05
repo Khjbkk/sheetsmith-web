@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="ติดต่อเรา"
+  description="ติดต่อ SheetSmith สอบถามข้อมูลข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 ผ่าน LINE Facebook หรือ Email"
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: 'ติดต่อเรา' }]} />
+
+    <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-6">ติดต่อเรา</h1>
+
+    <p class="text-text-light mb-8">
+      มีคำถามเกี่ยวกับข้อสอบ ต้องการสั่งซื้อ หรือมีข้อเสนอแนะ ติดต่อเราได้ตามช่องทางด้านล่าง ทีมงาน SheetSmith ยินดีช่วยเหลือทุกท่าน
+    </p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-12">
+      <div class="bg-white border border-border rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        </div>
+        <h2 class="font-heading font-semibold text-text mb-2">LINE</h2>
+        <p class="text-primary font-semibold text-lg">@sheetsmith</p>
+        <p class="text-sm text-text-light mt-2">ตอบกลับเร็วที่สุด</p>
+      </div>
+
+      <div class="bg-white border border-border rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+        </div>
+        <h2 class="font-heading font-semibold text-text mb-2">Facebook</h2>
+        <p class="text-primary font-semibold text-lg">SheetSmith</p>
+        <p class="text-sm text-text-light mt-2">ส่งข้อความได้ตลอด 24 ชม.</p>
+      </div>
+
+      <div class="bg-white border border-border rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-secondary/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        </div>
+        <h2 class="font-heading font-semibold text-text mb-2">Email</h2>
+        <p class="text-primary font-semibold text-lg">info@sheetsmith.co.th</p>
+        <p class="text-sm text-text-light mt-2">ตอบกลับภายใน 24 ชม.</p>
+      </div>
+
+      <div class="bg-white border border-border rounded-xl p-6 text-center">
+        <div class="w-12 h-12 bg-por1/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-por1" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+        </div>
+        <h2 class="font-heading font-semibold text-text mb-2">คำถามทั่วไป</h2>
+        <a href="/#faq" class="text-primary font-semibold hover:text-primary-dark transition-colors">ดู FAQ &rarr;</a>
+        <p class="text-sm text-text-light mt-2">คำถามที่พบบ่อย</p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

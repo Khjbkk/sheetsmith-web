@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+
+const guides = (await getCollection('guides'))
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const levelLabels: Record<string, string> = {
+  por1: 'ป.1',
+  mor1: 'ม.1',
+  mor4: 'ม.4',
+  all: 'ทุกระดับ',
+};
+
+const levelColors: Record<string, string> = {
+  por1: 'bg-por1/10 text-por1-dark',
+  mor1: 'bg-mor1/10 text-mor1-dark',
+  mor4: 'bg-mor4/10 text-mor4-dark',
+  all: 'bg-primary/10 text-primary',
+};
+---
+
+<BaseLayout
+  title="คู่มือเตรียมสอบ — แนวทางเตรียมสอบเข้า ป.1 ม.1 ม.4"
+  description="คู่มือเตรียมสอบเข้า ป.1 ม.1 ม.4 ฉบับสมบูรณ์ แนวทางเตรียมตัว ตารางอ่านหนังสือ เทคนิคทำข้อสอบ วิธีเลือกโรงเรียน"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: 'คู่มือเตรียมสอบ' }]} />
+
+    <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-8">คู่มือเตรียมสอบ</h1>
+
+    {guides.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {guides.map((guide) => (
+          <a href={`/guides/${guide.id}/`} class="group block">
+            <div class="bg-white border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/30 transition-all h-full">
+              <div class="flex items-center gap-2 mb-3">
+                <span class={`px-2 py-1 text-xs font-medium rounded-md ${levelColors[guide.data.level]}`}>
+                  {levelLabels[guide.data.level]}
+                </span>
+              </div>
+              <h2 class="font-heading text-lg font-semibold text-text group-hover:text-primary transition-colors mb-2">
+                {guide.data.title}
+              </h2>
+              <p class="text-sm text-text-light">{guide.data.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    ) : (
+      <p class="text-text-light text-center bg-white border border-border rounded-xl p-12">
+        กำลังเตรียมคู่มือ เร็วๆ นี้
+      </p>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSection from '../components/FAQSection.astro';
+import { getCollection } from 'astro:content';
+
+const allBlogPosts = await getCollection('blog', ({ data }) => !data.draft);
+const latestPosts = allBlogPosts
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
+  .slice(0, 3);
+
+const levelCards = [
+  {
+    level: 'ป.1',
+    href: '/exams/por1/',
+    color: 'border-por1 bg-por1-light/50',
+    iconBg: 'bg-por1',
+    description: 'ข้อสอบเข้าสาธิตจุฬา สาธิตเกษตร และโรงเรียนชั้นนำ',
+    subjects: ['เชาว์ปัญญา', 'ภาษาไทย', 'คณิตศาสตร์', 'ภาษาอังกฤษ'],
+  },
+  {
+    level: 'ม.1',
+    href: '/exams/mor1/',
+    color: 'border-mor1 bg-mor1-light/50',
+    iconBg: 'bg-mor1',
+    description: 'ข้อสอบเข้า ร.ร.ชั้นนำ สาธิตปทุมวัน สวนกุหลาบ เตรียมอุดมพัฒนาการ',
+    subjects: ['คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ', 'ภาษาไทย', 'สังคม'],
+  },
+  {
+    level: 'ม.4',
+    href: '/exams/mor4/',
+    color: 'border-mor4 bg-mor4-light/50',
+    iconBg: 'bg-mor4',
+    description: 'ข้อสอบเข้าเตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตจุฬา',
+    subjects: ['คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ', 'ภาษาไทย-สังคม'],
+  },
+];
+
+const uspItems = [
+  {
+    title: 'ข้อสอบจากสนามจริง',
+    desc: 'รวบรวมแนวข้อสอบจากสนามสอบจริง ไม่ใช่ข้อสอบที่แต่งขึ้นเอง',
+  },
+  {
+    title: 'เฉลยละเอียดทุกข้อ',
+    desc: 'ทุกข้อมีเฉลยพร้อมวิธีคิดแบบ step-by-step เข้าใจง่าย',
+  },
+  {
+    title: 'อัปเดตตามหลักสูตรล่าสุด',
+    desc: 'ข้อสอบอัปเดตตามหลักสูตรและแนวข้อสอบล่าสุดทุกปี',
+  },
+  {
+    title: 'ออกแบบให้ฝึกซ้ำได้',
+    desc: 'จัดเรียงข้อสอบเป็นชุด ฝึกทำซ้ำหลายรอบเพื่อความชำนาญ',
+  },
+];
+
+const faqItems = [
+  {
+    question: 'SheetSmith ต่างจากข้อสอบตามท้องตลาดอย่างไร?',
+    answer: 'SheetSmith รวบรวมแนวข้อสอบจากสนามสอบจริงของโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียดแบบ step-by-step ที่อธิบายวิธีคิดทุกข้อ ไม่ใช่แค่เฉลยคำตอบ ทำให้นักเรียนเข้าใจหลักการและสามารถประยุกต์ใช้กับข้อสอบลักษณะเดียวกันได้',
+  },
+  {
+    question: 'ลูกอายุเท่าไหร่ควรเริ่มฝึกทำข้อสอบ?',
+    answer: 'สำหรับสอบเข้า ป.1 แนะนำให้เริ่มฝึกตั้งแต่อายุ 5-6 ขวบ หรือประมาณ 6-12 เดือนก่อนสอบ สำหรับ ม.1 ควรเริ่มตั้งแต่ ป.5 ส่วน ม.4 ควรเริ่มตั้งแต่ ม.2-ม.3 การเริ่มเตรียมตัวเร็วทำให้มีเวลาเพียงพอในการฝึกฝนและทบทวน',
+  },
+  {
+    question: 'ข้อสอบเข้า ป.1 สาธิตจุฬา ยากไหม?',
+    answer: 'ข้อสอบเข้าสาธิตจุฬาระดับ ป.1 เน้นทดสอบความพร้อมและเชาว์ปัญญาของเด็ก มีทั้งข้อที่ง่ายและยาก สิ่งสำคัญคือเด็กต้องคุ้นเคยกับรูปแบบข้อสอบ การฝึกทำข้อสอบตัวอย่างจะช่วยให้เด็กมั่นใจและพร้อมมากขึ้น',
+  },
+  {
+    question: 'มีเฉลยละเอียดไหม?',
+    answer: 'ทุกชุดข้อสอบของ SheetSmith มีเฉลยละเอียดทุกข้อ อธิบายวิธีคิด step-by-step เหมาะสำหรับทั้งนักเรียนที่ต้องการทบทวนด้วยตัวเอง และผู้ปกครองที่ต้องการช่วยสอนลูก',
+  },
+  {
+    question: 'สั่งซื้อยังไง ได้รับเมื่อไหร่?',
+    answer: 'สามารถสั่งซื้อผ่านทาง LINE @sheetsmith หรือ Facebook Page ได้เลย ข้อสอบเป็นไฟล์ PDF ดาวน์โหลดได้ทันทีหลังชำระเงิน ไม่ต้องรอจัดส่ง',
+  },
+];
+---
+
+<BaseLayout
+  title="หน้าแรก"
+  description="SheetSmith ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด รวมแนวข้อสอบจริงอัปเดตล่าสุด"
+>
+  <!-- Hero Section -->
+  <section class="bg-gradient-to-br from-primary/5 via-bg to-secondary/5 py-16 md:py-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+      <h1 class="font-heading text-3xl md:text-5xl font-bold text-text mb-4 leading-tight">
+        ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4
+        <br class="hidden md:block" />
+        <span class="text-primary">— SheetSmith</span>
+      </h1>
+      <p class="text-lg md:text-xl text-text-light max-w-3xl mx-auto mb-8">
+        รวมแนวข้อสอบจากโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียดทุกข้อ
+      </p>
+      <a
+        href="/exams/"
+        class="inline-block bg-primary text-white font-semibold px-8 py-4 rounded-xl text-lg hover:bg-primary-dark transition-colors shadow-lg shadow-primary/25"
+      >
+        ดูตัวอย่างข้อสอบฟรี
+      </a>
+    </div>
+  </section>
+
+  <!-- Level Cards Section -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+    <h2 class="font-heading text-2xl md:text-3xl font-bold text-text text-center mb-10">
+      เลือกระดับชั้นที่ต้องการ
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {levelCards.map((card) => (
+        <a href={card.href} class="group block">
+          <div class={`rounded-2xl border-2 p-6 hover:shadow-xl transition-all duration-200 ${card.color}`}>
+            <div class={`w-12 h-12 rounded-xl ${card.iconBg} flex items-center justify-center text-white font-bold text-lg mb-4`}>
+              {card.level}
+            </div>
+            <h3 class="font-heading text-xl font-bold text-text mb-2 group-hover:text-primary transition-colors">
+              สอบเข้า {card.level}
+            </h3>
+            <p class="text-sm text-text-light mb-4">{card.description}</p>
+            <div class="flex flex-wrap gap-2">
+              {card.subjects.map((subject) => (
+                <span class="px-2 py-1 bg-white/80 text-text-light text-xs rounded-md">{subject}</span>
+              ))}
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- USP Section -->
+  <section class="bg-white py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6">
+      <h2 class="font-heading text-2xl md:text-3xl font-bold text-text text-center mb-10">
+        ทำไมต้อง SheetSmith?
+      </h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {uspItems.map((item) => (
+          <div class="text-center p-6">
+            <h3 class="font-heading font-semibold text-text mb-2">{item.title}</h3>
+            <p class="text-sm text-text-light">{item.desc}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Latest Blog Posts -->
+  {latestPosts.length > 0 && (
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="font-heading text-2xl md:text-3xl font-bold text-text">บทความล่าสุด</h2>
+        <a href="/blog/" class="text-primary hover:text-primary-dark font-medium text-sm transition-colors">
+          ดูทั้งหมด &rarr;
+        </a>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {latestPosts.map((post) => (
+          <a href={`/blog/${post.id}/`} class="group block">
+            <div class="bg-white border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/30 transition-all">
+              <time class="text-xs text-text-light" datetime={post.data.publishDate.toISOString()}>
+                {post.data.publishDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+              </time>
+              <h3 class="font-heading font-semibold text-text group-hover:text-primary transition-colors mt-2 mb-2">
+                {post.data.title}
+              </h3>
+              <p class="text-sm text-text-light line-clamp-2">{post.data.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ Section -->
+  <div class="max-w-3xl mx-auto px-4 sm:px-6">
+    <FAQSection items={faqItems} />
+  </div>
+
+  <!-- Trust Bar -->
+  <section class="bg-white py-12 mt-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
+      <p class="text-text-light text-sm mb-6">ได้รับความไว้วางใจจากผู้ปกครองทั่วประเทศ</p>
+      <div class="flex flex-wrap justify-center items-center gap-8 text-text-light">
+        <div class="text-center">
+          <div class="font-heading text-3xl font-bold text-primary">500+</div>
+          <div class="text-sm">ข้อสอบตัวอย่าง</div>
+        </div>
+        <div class="text-center">
+          <div class="font-heading text-3xl font-bold text-accent">3</div>
+          <div class="text-sm">ระดับชั้น</div>
+        </div>
+        <div class="text-center">
+          <div class="font-heading text-3xl font-bold text-secondary">10+</div>
+          <div class="text-sm">วิชาที่ครอบคลุม</div>
+        </div>
+        <div class="text-center">
+          <div class="font-heading text-3xl font-bold text-por1">100%</div>
+          <div class="text-sm">เฉลยละเอียด</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

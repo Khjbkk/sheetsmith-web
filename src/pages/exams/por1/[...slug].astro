@@ -1,0 +1,32 @@
+---
+import ExamLayout from '../../../layouts/ExamLayout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const exams = await getCollection('exams');
+  return exams
+    .filter((e) => e.data.level === 'por1')
+    .map((exam) => ({
+      params: { slug: exam.id },
+      props: { exam },
+    }));
+}
+
+const { exam } = Astro.props;
+const { Content } = await render(exam);
+---
+
+<ExamLayout
+  title={exam.data.title}
+  description={exam.data.description}
+  level={exam.data.level}
+  subject={exam.data.subject}
+  school={exam.data.school}
+  questionCount={exam.data.questionCount}
+  difficulty={exam.data.difficulty}
+  isFree={exam.data.isFree}
+  publishDate={exam.data.publishDate}
+  tags={exam.data.tags}
+>
+  <Content />
+</ExamLayout>

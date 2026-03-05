@@ -1,0 +1,32 @@
+---
+interface RelatedItem {
+  title: string;
+  href: string;
+  description?: string;
+}
+
+interface Props {
+  title?: string;
+  items: RelatedItem[];
+}
+
+const { title = 'เนื้อหาที่เกี่ยวข้อง', items } = Astro.props;
+---
+
+{items.length > 0 && (
+  <section class="my-12">
+    <h2 class="font-heading text-xl font-bold text-text mb-4">{title}</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {items.map((item) => (
+        <a href={item.href} class="block bg-white border border-border rounded-xl p-4 hover:shadow-md hover:border-primary/30 transition-all">
+          <h3 class="font-heading font-semibold text-text hover:text-primary transition-colors text-sm">
+            {item.title}
+          </h3>
+          {item.description && (
+            <p class="text-xs text-text-light mt-1 line-clamp-2">{item.description}</p>
+          )}
+        </a>
+      ))}
+    </div>
+  </section>
+)}

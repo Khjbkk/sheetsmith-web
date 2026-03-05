@@ -1,0 +1,116 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import CTABanner from '../components/CTABanner.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  level: 'por1' | 'mor1' | 'mor4';
+  subject: string;
+  school?: string;
+  questionCount: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  isFree: boolean;
+  publishDate: Date;
+  tags: string[];
+}
+
+const { title, description, level, subject, school, questionCount, difficulty, isFree, publishDate, tags } = Astro.props;
+
+const levelLabels: Record<string, string> = {
+  por1: 'สอบเข้า ป.1',
+  mor1: 'สอบเข้า ม.1',
+  mor4: 'สอบเข้า ม.4',
+};
+
+const levelHrefs: Record<string, string> = {
+  por1: '/exams/por1/',
+  mor1: '/exams/mor1/',
+  mor4: '/exams/mor4/',
+};
+
+const difficultyLabels: Record<string, string> = {
+  easy: 'ง่าย',
+  medium: 'ปานกลาง',
+  hard: 'ยาก',
+};
+
+const levelColors: Record<string, string> = {
+  por1: 'bg-por1-light text-por1-dark border-por1',
+  mor1: 'bg-mor1-light text-mor1-dark border-mor1',
+  mor4: 'bg-mor4-light text-mor4-dark border-mor4',
+};
+
+const examSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LearningResource',
+  name: title,
+  description,
+  educationalLevel: levelLabels[level],
+  learningResourceType: 'Practice Exam',
+  isAccessibleForFree: isFree,
+  inLanguage: 'th',
+  provider: {
+    '@type': 'Organization',
+    name: 'SheetSmith',
+  },
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'ข้อสอบ', href: '/exams/' },
+      { label: levelLabels[level], href: levelHrefs[level] },
+      { label: title },
+    ]} />
+
+    <article>
+      <header class="mb-8">
+        <div class="flex items-center gap-3 mb-4">
+          <span class={`inline-block px-3 py-1 rounded-lg text-sm font-semibold border ${levelColors[level]}`}>
+            {levelLabels[level]}
+          </span>
+          {isFree && (
+            <span class="inline-block px-3 py-1 rounded-lg text-sm font-semibold bg-accent/10 text-accent border border-accent/30">
+              ฟรี
+            </span>
+          )}
+        </div>
+        <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-4">{title}</h1>
+        <p class="text-text-light mb-4">{description}</p>
+
+        <div class="flex flex-wrap items-center gap-4 text-sm text-text-light bg-white border border-border rounded-xl p-4">
+          <div>
+            <span class="font-medium text-text">วิชา:</span> {subject}
+          </div>
+          {school && (
+            <div>
+              <span class="font-medium text-text">โรงเรียน:</span> {school}
+            </div>
+          )}
+          <div>
+            <span class="font-medium text-text">จำนวน:</span> {questionCount} ข้อ
+          </div>
+          <div>
+            <span class="font-medium text-text">ระดับ:</span> {difficultyLabels[difficulty]}
+          </div>
+        </div>
+      </header>
+
+      <div class="prose max-w-none">
+        <slot />
+      </div>
+    </article>
+
+    <CTABanner
+      title="ต้องการข้อสอบเพิ่มเติม?"
+      description="สั่งซื้อชุดข้อสอบเต็มพร้อมเฉลยละเอียด เตรียมพร้อมก่อนวันสอบจริง"
+      buttonText="ดูชุดข้อสอบทั้งหมด"
+      buttonHref={levelHrefs[level]}
+    />
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(examSchema)} />
+</BaseLayout>

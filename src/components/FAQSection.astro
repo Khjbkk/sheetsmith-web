@@ -1,0 +1,47 @@
+---
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  title?: string;
+  items: FAQItem[];
+}
+
+const { title = 'คำถามที่พบบ่อย', items } = Astro.props;
+
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: item.answer,
+    },
+  })),
+};
+---
+
+<section class="my-12">
+  <h2 class="font-heading text-2xl font-bold text-text mb-6">{title}</h2>
+  <div class="space-y-3">
+    {items.map((item, index) => (
+      <details class="group bg-white border border-border rounded-xl overflow-hidden">
+        <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-text hover:bg-gray-50 transition-colors">
+          <span>{item.question}</span>
+          <svg class="w-5 h-5 text-text-light group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </summary>
+        <div class="px-6 pb-4 text-text-light">
+          <p>{item.answer}</p>
+        </div>
+      </details>
+    ))}
+  </div>
+</section>
+
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import CTABanner from '../../components/CTABanner.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const guides = await getCollection('guides');
+  return guides.map((guide) => ({
+    params: { slug: guide.id },
+    props: { guide },
+  }));
+}
+
+const { guide } = Astro.props;
+const { Content } = await render(guide);
+
+const levelLabels: Record<string, string> = {
+  por1: 'สอบเข้า ป.1',
+  mor1: 'สอบเข้า ม.1',
+  mor4: 'สอบเข้า ม.4',
+  all: 'ทุกระดับ',
+};
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: guide.data.title,
+  description: guide.data.description,
+  author: { '@type': 'Organization', name: 'SheetSmith' },
+  publisher: { '@type': 'Organization', name: 'SheetSmith' },
+  datePublished: guide.data.publishDate.toISOString(),
+  ...(guide.data.updatedDate ? { dateModified: guide.data.updatedDate.toISOString() } : {}),
+};
+---
+
+<BaseLayout
+  title={guide.data.title}
+  description={guide.data.description}
+  type="article"
+  publishDate={guide.data.publishDate}
+  updatedDate={guide.data.updatedDate}
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'คู่มือเตรียมสอบ', href: '/guides/' },
+      { label: levelLabels[guide.data.level] },
+      { label: guide.data.title },
+    ]} />
+
+    <article>
+      <header class="mb-8">
+        <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-4">{guide.data.title}</h1>
+        <div class="flex items-center gap-4 text-sm text-text-light">
+          <time datetime={guide.data.publishDate.toISOString()}>
+            {guide.data.publishDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+          </time>
+          {guide.data.updatedDate && (
+            <>
+              <span>|</span>
+              <span>อัปเดต: {guide.data.updatedDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </>
+          )}
+        </div>
+        {guide.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 mt-4">
+            {guide.data.tags.map((tag) => (
+              <span class="px-2 py-1 bg-gray-100 text-text-light text-xs rounded-md">{tag}</span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      <div class="prose max-w-none">
+        <Content />
+      </div>
+    </article>
+
+    <CTABanner />
+  </div>
+
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+</BaseLayout>

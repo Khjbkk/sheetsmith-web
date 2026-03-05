@@ -1,0 +1,47 @@
+---
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+
+const allItems: BreadcrumbItem[] = [
+  { label: 'หน้าแรก', href: '/' },
+  ...items,
+];
+
+const schemaData = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: allItems.map((item, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: item.label,
+    ...(item.href ? { item: new URL(item.href, Astro.site).toString() } : {}),
+  })),
+};
+---
+
+<nav aria-label="Breadcrumb" class="text-sm text-text-light mb-6">
+  <ol class="flex flex-wrap items-center gap-1">
+    {allItems.map((item, index) => (
+      <li class="flex items-center gap-1">
+        {index > 0 && <span class="text-border">/</span>}
+        {item.href && index < allItems.length - 1 ? (
+          <a href={item.href} class="hover:text-primary transition-colors">
+            {item.label}
+          </a>
+        ) : (
+          <span class="text-text">{item.label}</span>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

@@ -1,0 +1,64 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  level: 'por1' | 'mor1' | 'mor4';
+  subject: string;
+  questionCount: number;
+  difficulty: 'easy' | 'medium' | 'hard';
+  isFree: boolean;
+  href: string;
+}
+
+const { title, description, level, subject, questionCount, difficulty, isFree, href } = Astro.props;
+
+const levelColors = {
+  por1: 'bg-por1-light text-por1-dark border-por1',
+  mor1: 'bg-mor1-light text-mor1-dark border-mor1',
+  mor4: 'bg-mor4-light text-mor4-dark border-mor4',
+};
+
+const levelLabels = {
+  por1: 'ป.1',
+  mor1: 'ม.1',
+  mor4: 'ม.4',
+};
+
+const difficultyLabels = {
+  easy: 'ง่าย',
+  medium: 'ปานกลาง',
+  hard: 'ยาก',
+};
+
+const difficultyColors = {
+  easy: 'text-accent',
+  medium: 'text-secondary',
+  hard: 'text-red-500',
+};
+---
+
+<a href={href} class="block group">
+  <div class="bg-white rounded-xl border border-border p-5 hover:shadow-lg hover:border-primary/30 transition-all duration-200">
+    <div class="flex items-start justify-between mb-3">
+      <span class={`inline-block px-2 py-1 rounded-md text-xs font-semibold border ${levelColors[level]}`}>
+        {levelLabels[level]}
+      </span>
+      {isFree && (
+        <span class="inline-block px-2 py-1 rounded-md text-xs font-semibold bg-accent/10 text-accent border border-accent/30">
+          ฟรี
+        </span>
+      )}
+    </div>
+    <h3 class="font-heading font-semibold text-text group-hover:text-primary transition-colors mb-2">
+      {title}
+    </h3>
+    <p class="text-sm text-text-light mb-3 line-clamp-2">{description}</p>
+    <div class="flex items-center gap-3 text-xs text-text-light">
+      <span>{subject}</span>
+      <span>|</span>
+      <span>{questionCount} ข้อ</span>
+      <span>|</span>
+      <span class={difficultyColors[difficulty]}>{difficultyLabels[difficulty]}</span>
+    </div>
+  </div>
+</a>

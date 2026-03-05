@@ -1,0 +1,71 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ExamCard from '../../components/ExamCard.astro';
+import { getCollection } from 'astro:content';
+
+const allExams = (await getCollection('exams'))
+  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+
+const examsByLevel = {
+  por1: allExams.filter((e) => e.data.level === 'por1'),
+  mor1: allExams.filter((e) => e.data.level === 'mor1'),
+  mor4: allExams.filter((e) => e.data.level === 'mor4'),
+};
+
+const levelInfo = [
+  { key: 'por1' as const, label: 'สอบเข้า ป.1', href: '/exams/por1/', color: 'text-por1' },
+  { key: 'mor1' as const, label: 'สอบเข้า ม.1', href: '/exams/mor1/', color: 'text-mor1' },
+  { key: 'mor4' as const, label: 'สอบเข้า ม.4', href: '/exams/mor4/', color: 'text-mor4' },
+];
+
+const levelHrefs: Record<string, string> = {
+  por1: '/exams/por1/',
+  mor1: '/exams/mor1/',
+  mor4: '/exams/mor4/',
+};
+---
+
+<BaseLayout
+  title="ข้อสอบทั้งหมด — รวมแนวข้อสอบเข้า ป.1 ม.1 ม.4"
+  description="รวมตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด ดาวน์โหลดฟรี"
+>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: 'ข้อสอบทั้งหมด' }]} />
+
+    <h1 class="font-heading text-3xl md:text-4xl font-bold text-text mb-8">
+      รวมตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4
+    </h1>
+
+    {levelInfo.map((level) => (
+      <section class="mb-12">
+        <div class="flex items-center justify-between mb-4">
+          <h2 class={`font-heading text-2xl font-bold ${level.color}`}>{level.label}</h2>
+          <a href={level.href} class="text-primary hover:text-primary-dark text-sm font-medium transition-colors">
+            ดูทั้งหมด &rarr;
+          </a>
+        </div>
+        {examsByLevel[level.key].length > 0 ? (
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {examsByLevel[level.key].map((exam) => (
+              <ExamCard
+                title={exam.data.title}
+                description={exam.data.description}
+                level={exam.data.level}
+                subject={exam.data.subject}
+                questionCount={exam.data.questionCount}
+                difficulty={exam.data.difficulty}
+                isFree={exam.data.isFree}
+                href={`${levelHrefs[exam.data.level]}${exam.id}/`}
+              />
+            ))}
+          </div>
+        ) : (
+          <p class="text-text-light bg-white border border-border rounded-xl p-6 text-center">
+            กำลังเตรียมข้อสอบ เร็วๆ นี้
+          </p>
+        )}
+      </section>
+    ))}
+  </div>
+</BaseLayout>
