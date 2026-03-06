@@ -3,7 +3,7 @@ import ExamLayout from '../../../layouts/ExamLayout.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const exams = await getCollection('exams');
+  const exams = await getCollection('exams', ({ data }) => data.publishDate <= new Date());
   return exams
     .filter((e) => e.data.level === 'mor1')
     .map((exam) => ({

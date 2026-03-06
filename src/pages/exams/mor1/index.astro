@@ -6,7 +6,7 @@ import FAQSection from '../../../components/FAQSection.astro';
 import CTABanner from '../../../components/CTABanner.astro';
 import { getCollection } from 'astro:content';
 
-const exams = (await getCollection('exams'))
+const exams = (await getCollection('exams', ({ data }) => data.publishDate <= new Date()))
   .filter((e) => e.data.level === 'mor1')
   .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 

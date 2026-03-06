@@ -3,7 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
 
-const guides = (await getCollection('guides'))
+const guides = (await getCollection('guides', ({ data }) => data.publishDate <= new Date()))
   .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
 const levelLabels: Record<string, string> = {

@@ -5,7 +5,7 @@ import CTABanner from '../../components/CTABanner.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
-  const guides = await getCollection('guides');
+  const guides = await getCollection('guides', ({ data }) => data.publishDate <= new Date());
   return guides.map((guide) => ({
     params: { slug: guide.id },
     props: { guide },

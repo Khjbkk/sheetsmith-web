@@ -4,7 +4,7 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
 import ExamCard from '../../components/ExamCard.astro';
 import { getCollection } from 'astro:content';
 
-const allExams = (await getCollection('exams'))
+const allExams = (await getCollection('exams', ({ data }) => data.publishDate <= new Date()))
   .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
 const examsByLevel = {
