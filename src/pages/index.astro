@@ -12,24 +12,24 @@ const levelCards = [
   {
     level: 'ป.1',
     href: '/exams/por1/',
-    color: 'border-por1 bg-por1-light/50',
-    iconBg: 'bg-por1',
+    accent: 'por1',
+    emoji: '🌱',
     description: 'ข้อสอบเข้าสาธิตจุฬา สาธิตเกษตร และโรงเรียนชั้นนำ',
     subjects: ['เชาว์ปัญญา', 'ภาษาไทย', 'คณิตศาสตร์', 'ภาษาอังกฤษ'],
   },
   {
     level: 'ม.1',
     href: '/exams/mor1/',
-    color: 'border-mor1 bg-mor1-light/50',
-    iconBg: 'bg-mor1',
+    accent: 'mor1',
+    emoji: '📘',
     description: 'ข้อสอบเข้า ร.ร.ชั้นนำ สาธิตปทุมวัน สวนกุหลาบ เตรียมอุดมพัฒนาการ',
     subjects: ['คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ', 'ภาษาไทย', 'สังคม'],
   },
   {
     level: 'ม.4',
     href: '/exams/mor4/',
-    color: 'border-mor4 bg-mor4-light/50',
-    iconBg: 'bg-mor4',
+    accent: 'mor4',
+    emoji: '🎓',
     description: 'ข้อสอบเข้าเตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตจุฬา',
     subjects: ['คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ', 'ภาษาไทย-สังคม'],
   },
@@ -37,18 +37,22 @@ const levelCards = [
 
 const uspItems = [
   {
+    icon: '📝',
     title: 'ข้อสอบจากสนามจริง',
     desc: 'รวบรวมแนวข้อสอบจากสนามสอบจริง ไม่ใช่ข้อสอบที่แต่งขึ้นเอง',
   },
   {
+    icon: '✅',
     title: 'เฉลยละเอียดทุกข้อ',
     desc: 'ทุกข้อมีเฉลยพร้อมวิธีคิดแบบ step-by-step เข้าใจง่าย',
   },
   {
+    icon: '🔄',
     title: 'อัปเดตตามหลักสูตรล่าสุด',
     desc: 'ข้อสอบอัปเดตตามหลักสูตรและแนวข้อสอบล่าสุดทุกปี',
   },
   {
+    icon: '🔁',
     title: 'ออกแบบให้ฝึกซ้ำได้',
     desc: 'จัดเรียงข้อสอบเป็นชุด ฝึกทำซ้ำหลายรอบเพื่อความชำนาญ',
   },
@@ -80,47 +84,99 @@ const faqItems = [
 
 <BaseLayout
   title="หน้าแรก"
-  description="SheetSmith ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด รวมแนวข้อสอบจริงอัปเดตล่าสุด"
+  description="SheetSmith ชีทติวสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด รวมแนวข้อสอบจริงอัปเดตล่าสุด ดาวน์โหลด PDF ได้ทันที"
 >
   <!-- Hero Section -->
-  <section class="bg-gradient-to-br from-primary/5 via-bg to-secondary/5 py-16 md:py-24">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-      <h1 class="font-heading text-3xl md:text-5xl font-bold text-text mb-4 leading-tight">
-        ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4
-        <br class="hidden md:block" />
-        <span class="text-primary">— SheetSmith</span>
-      </h1>
-      <p class="text-lg md:text-xl text-text-light max-w-3xl mx-auto mb-8">
-        รวมแนวข้อสอบจากโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียดทุกข้อ
-      </p>
-      <a
-        href="/exams/"
-        class="inline-block bg-primary text-white font-semibold px-8 py-4 rounded-xl text-lg hover:bg-primary-dark transition-colors shadow-lg shadow-primary/25"
-      >
-        ดูตัวอย่างข้อสอบฟรี
-      </a>
+  <section class="relative overflow-hidden bg-primary py-20 md:py-28">
+    <!-- Decorative elements -->
+    <div class="absolute inset-0 opacity-10">
+      <div class="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-secondary"></div>
+      <div class="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-accent"></div>
+    </div>
+
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6">
+      <div class="flex flex-col md:flex-row items-center gap-10">
+        <div class="flex-1 text-center md:text-left">
+          <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-4 animate-fade-up">ชีทติวสอบ ประถม-มัธยม</p>
+          <h1 class="font-heading text-3xl md:text-5xl font-extrabold text-white mb-5 leading-[1.2] animate-fade-up stagger-1">
+            เตรียมสอบเข้า<br />
+            <span class="text-secondary">ป.1 ม.1 ม.4</span><br />
+            ด้วยข้อสอบจากสนามจริง
+          </h1>
+          <p class="text-lg text-white/75 max-w-xl mb-8 animate-fade-up stagger-2">
+            รวมแนวข้อสอบจากโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียดทุกข้อ ดาวน์โหลด PDF ได้ทันที
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start animate-fade-up stagger-3">
+            <a
+              href="/exams/"
+              class="inline-block bg-secondary text-primary-dark font-bold px-8 py-4 rounded-xl text-lg hover:bg-secondary-dark hover:text-white transition-all shadow-lg"
+            >
+              ดูตัวอย่างข้อสอบฟรี
+            </a>
+            <a
+              href="/about/"
+              class="inline-block bg-white/10 backdrop-blur text-white font-semibold px-8 py-4 rounded-xl text-lg hover:bg-white/20 transition-all border border-white/20"
+            >
+              เกี่ยวกับเรา
+            </a>
+          </div>
+        </div>
+        <div class="flex-shrink-0 animate-scale-in stagger-2">
+          <img src="/logo.png" alt="SheetSmith Logo" width="200" height="200" class="rounded-2xl shadow-2xl" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trust Stats Bar -->
+  <section class="bg-white border-b border-border">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+        <div>
+          <div class="font-heading text-3xl font-extrabold text-primary">500+</div>
+          <div class="text-sm text-text-muted mt-1">ข้อสอบตัวอย่าง</div>
+        </div>
+        <div>
+          <div class="font-heading text-3xl font-extrabold text-accent">3</div>
+          <div class="text-sm text-text-muted mt-1">ระดับชั้น</div>
+        </div>
+        <div>
+          <div class="font-heading text-3xl font-extrabold text-secondary">10+</div>
+          <div class="text-sm text-text-muted mt-1">วิชาที่ครอบคลุม</div>
+        </div>
+        <div>
+          <div class="font-heading text-3xl font-extrabold text-por1">100%</div>
+          <div class="text-sm text-text-muted mt-1">เฉลยละเอียด</div>
+        </div>
+      </div>
     </div>
   </section>
 
   <!-- Level Cards Section -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-    <h2 class="font-heading text-2xl md:text-3xl font-bold text-text text-center mb-10">
-      เลือกระดับชั้นที่ต้องการ
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {levelCards.map((card) => (
-        <a href={card.href} class="group block">
-          <div class={`rounded-2xl border-2 p-6 hover:shadow-xl transition-all duration-200 ${card.color}`}>
-            <div class={`w-12 h-12 rounded-xl ${card.iconBg} flex items-center justify-center text-white font-bold text-lg mb-4`}>
-              {card.level}
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+    <div class="text-center mb-12">
+      <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-2">เลือกระดับชั้น</p>
+      <h2 class="font-heading text-2xl md:text-4xl font-bold text-text">
+        เตรียมพร้อมสำหรับทุกสนามสอบ
+      </h2>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {levelCards.map((card, i) => (
+        <a href={card.href} class={`group block animate-fade-up stagger-${i + 1}`}>
+          <div class={`rounded-2xl border-2 border-${card.accent}/30 bg-${card.accent}-light/30 p-7 hover:shadow-xl hover:border-${card.accent} hover:-translate-y-1 transition-all duration-300`}>
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-3xl">{card.emoji}</span>
+              <div class={`px-3 py-1 rounded-full bg-${card.accent} text-white font-bold text-sm`}>
+                {card.level}
+              </div>
             </div>
             <h3 class="font-heading text-xl font-bold text-text mb-2 group-hover:text-primary transition-colors">
               สอบเข้า {card.level}
             </h3>
-            <p class="text-sm text-text-light mb-4">{card.description}</p>
+            <p class="text-sm text-text-light mb-5 leading-relaxed">{card.description}</p>
             <div class="flex flex-wrap gap-2">
               {card.subjects.map((subject) => (
-                <span class="px-2 py-1 bg-white/80 text-text-light text-xs rounded-md">{subject}</span>
+                <span class="px-2.5 py-1 bg-white/80 text-text-light text-xs rounded-full border border-border">{subject}</span>
               ))}
             </div>
           </div>
@@ -130,16 +186,20 @@ const faqItems = [
   </section>
 
   <!-- USP Section -->
-  <section class="bg-white py-16">
+  <section class="bg-bg-warm py-20">
     <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <h2 class="font-heading text-2xl md:text-3xl font-bold text-text text-center mb-10">
-        ทำไมต้อง SheetSmith?
-      </h2>
+      <div class="text-center mb-12">
+        <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-2">จุดเด่น</p>
+        <h2 class="font-heading text-2xl md:text-4xl font-bold text-text">
+          ทำไมต้อง SheetSmith?
+        </h2>
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {uspItems.map((item) => (
-          <div class="text-center p-6">
-            <h3 class="font-heading font-semibold text-text mb-2">{item.title}</h3>
-            <p class="text-sm text-text-light">{item.desc}</p>
+        {uspItems.map((item, i) => (
+          <div class={`bg-white rounded-2xl p-7 border border-border hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-fade-up stagger-${i + 1}`}>
+            <div class="text-3xl mb-4">{item.icon}</div>
+            <h3 class="font-heading font-bold text-text mb-2">{item.title}</h3>
+            <p class="text-sm text-text-light leading-relaxed">{item.desc}</p>
           </div>
         ))}
       </div>
@@ -148,27 +208,33 @@ const faqItems = [
 
   <!-- Latest Blog Posts -->
   {latestPosts.length > 0 && (
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-      <div class="flex items-center justify-between mb-8">
-        <h2 class="font-heading text-2xl md:text-3xl font-bold text-text">บทความล่าสุด</h2>
-        <a href="/blog/" class="text-primary hover:text-primary-dark font-medium text-sm transition-colors">
+    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
+      <div class="flex items-end justify-between mb-10">
+        <div>
+          <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-2">บทความ</p>
+          <h2 class="font-heading text-2xl md:text-3xl font-bold text-text">บทความล่าสุด</h2>
+        </div>
+        <a href="/blog/" class="text-primary hover:text-primary-dark font-semibold text-sm transition-colors hidden sm:block">
           ดูทั้งหมด &rarr;
         </a>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {latestPosts.map((post) => (
-          <a href={`/blog/${post.id}/`} class="group block">
-            <div class="bg-white border border-border rounded-xl p-6 hover:shadow-lg hover:border-primary/30 transition-all">
-              <time class="text-xs text-text-light" datetime={post.data.publishDate.toISOString()}>
+        {latestPosts.map((post, i) => (
+          <a href={`/blog/${post.id}/`} class={`group block animate-fade-up stagger-${i + 1}`}>
+            <div class="bg-white border border-border rounded-2xl p-6 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 h-full">
+              <time class="text-xs text-text-muted font-medium" datetime={post.data.publishDate.toISOString()}>
                 {post.data.publishDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
               </time>
-              <h3 class="font-heading font-semibold text-text group-hover:text-primary transition-colors mt-2 mb-2">
+              <h3 class="font-heading font-bold text-text group-hover:text-primary transition-colors mt-3 mb-2 text-lg leading-snug">
                 {post.data.title}
               </h3>
-              <p class="text-sm text-text-light line-clamp-2">{post.data.description}</p>
+              <p class="text-sm text-text-light line-clamp-2 leading-relaxed">{post.data.description}</p>
             </div>
           </a>
         ))}
+      </div>
+      <div class="text-center mt-8 sm:hidden">
+        <a href="/blog/" class="text-primary font-semibold">ดูบทความทั้งหมด &rarr;</a>
       </div>
     </section>
   )}
@@ -178,27 +244,20 @@ const faqItems = [
     <FAQSection items={faqItems} />
   </div>
 
-  <!-- Trust Bar -->
-  <section class="bg-white py-12 mt-8">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center">
-      <p class="text-text-light text-sm mb-6">ได้รับความไว้วางใจจากผู้ปกครองทั่วประเทศ</p>
-      <div class="flex flex-wrap justify-center items-center gap-8 text-text-light">
-        <div class="text-center">
-          <div class="font-heading text-3xl font-bold text-primary">500+</div>
-          <div class="text-sm">ข้อสอบตัวอย่าง</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading text-3xl font-bold text-accent">3</div>
-          <div class="text-sm">ระดับชั้น</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading text-3xl font-bold text-secondary">10+</div>
-          <div class="text-sm">วิชาที่ครอบคลุม</div>
-        </div>
-        <div class="text-center">
-          <div class="font-heading text-3xl font-bold text-por1">100%</div>
-          <div class="text-sm">เฉลยละเอียด</div>
-        </div>
+  <!-- CTA Section -->
+  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-10 md:p-14 text-center text-white relative overflow-hidden">
+      <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-secondary/20"></div>
+      <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-accent/20"></div>
+      <div class="relative">
+        <h2 class="font-heading text-2xl md:text-3xl font-bold mb-3">พร้อมเริ่มฝึกทำข้อสอบแล้วหรือยัง?</h2>
+        <p class="text-white/75 mb-8 max-w-2xl mx-auto">ดาวน์โหลดตัวอย่างข้อสอบฟรี พร้อมเฉลยละเอียดทุกข้อ เริ่มเตรียมตัวได้เลยวันนี้</p>
+        <a
+          href="/exams/"
+          class="inline-block bg-secondary text-primary-dark font-bold px-10 py-4 rounded-xl text-lg hover:bg-secondary-dark hover:text-white transition-all shadow-lg"
+        >
+          ดูตัวอย่างข้อสอบฟรี
+        </a>
       </div>
     </div>
   </section>

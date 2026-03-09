@@ -11,25 +11,28 @@ const navItems = [
 const currentPath = Astro.url.pathname;
 ---
 
-<header class="bg-white border-b border-border sticky top-0 z-50">
+<header class="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-shadow duration-300" id="site-header">
   <div class="max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="flex items-center justify-between h-16">
+    <div class="flex items-center justify-between h-[68px]">
       <!-- Logo -->
-      <a href="/" class="flex items-center gap-2 font-heading text-xl font-bold text-primary">
-        <img src="/logo.png" alt="SheetSmith" width="40" height="40" class="rounded" />
-        SheetSmith
+      <a href="/" class="flex items-center gap-2.5 group">
+        <img src="/logo.png" alt="SheetSmith" width="42" height="42" class="rounded-lg shadow-sm group-hover:shadow transition-shadow duration-200" />
+        <div class="flex flex-col leading-tight">
+          <span class="font-heading text-lg font-bold text-primary tracking-tight">SheetSmith</span>
+          <span class="text-[10px] text-text-muted font-medium tracking-wide">ชีทติวสอบ ประถม-มัธยม</span>
+        </div>
       </a>
 
       <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-1">
+      <nav class="hidden md:flex items-center gap-0.5">
         {navItems.map((item) => (
           <a
             href={item.href}
             class:list={[
-              'px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+              'px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200',
               currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                ? 'bg-primary/10 text-primary'
-                : 'text-text-light hover:text-text hover:bg-gray-100',
+                ? 'bg-primary text-white shadow-sm'
+                : 'text-text-light hover:text-primary hover:bg-primary-light',
             ]}
           >
             {item.label}
@@ -40,7 +43,7 @@ const currentPath = Astro.url.pathname;
       <!-- Mobile menu button -->
       <button
         id="mobile-menu-btn"
-        class="md:hidden p-2 rounded-lg text-text-light hover:bg-gray-100"
+        class="md:hidden p-2 rounded-lg text-text-light hover:bg-bg-warm active:scale-95 transition-all"
         aria-label="เปิดเมนู"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,15 +53,15 @@ const currentPath = Astro.url.pathname;
     </div>
 
     <!-- Mobile Nav -->
-    <nav id="mobile-menu" class="hidden md:hidden pb-4">
+    <nav id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border pt-3">
       {navItems.map((item) => (
         <a
           href={item.href}
           class:list={[
-            'block px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+            'block px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
             currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-              ? 'bg-primary/10 text-primary'
-              : 'text-text-light hover:text-text hover:bg-gray-100',
+              ? 'bg-primary text-white'
+              : 'text-text-light hover:text-primary hover:bg-primary-light',
           ]}
         >
           {item.label}
@@ -73,5 +76,15 @@ const currentPath = Astro.url.pathname;
   const menu = document.getElementById('mobile-menu');
   btn?.addEventListener('click', () => {
     menu?.classList.toggle('hidden');
+  });
+
+  // Add shadow on scroll
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 10) {
+      header?.classList.add('shadow-md');
+    } else {
+      header?.classList.remove('shadow-md');
+    }
   });
 </script>

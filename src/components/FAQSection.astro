@@ -27,16 +27,16 @@ const schemaData = {
 
 <section class="my-12">
   <h2 class="font-heading text-2xl font-bold text-text mb-6">{title}</h2>
-  <div class="space-y-3">
+  <div class="space-y-2">
     {items.map((item, index) => (
-      <details class="group bg-white border border-border rounded-xl overflow-hidden">
-        <summary class="flex items-center justify-between px-6 py-4 cursor-pointer font-medium text-text hover:bg-gray-50 transition-colors">
+      <details class="group bg-white border border-border rounded-xl overflow-hidden hover:border-primary/30 transition-colors">
+        <summary class="flex items-center justify-between gap-4 px-6 py-4 cursor-pointer font-medium text-text hover:text-primary transition-colors">
           <span>{item.question}</span>
-          <svg class="w-5 h-5 text-text-light group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-5 h-5 shrink-0 text-text-muted group-open:rotate-180 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </summary>
-        <div class="px-6 pb-4 text-text-light">
+        <div class="px-6 pb-5 text-text-light border-t border-border/50 pt-3">
           <p>{item.answer}</p>
         </div>
       </details>

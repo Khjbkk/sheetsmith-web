@@ -2,60 +2,69 @@
 const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-white border-t border-border mt-16">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+<footer class="bg-primary text-white mt-20">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
       <!-- Brand -->
       <div class="md:col-span-1">
-        <a href="/" class="font-heading text-xl font-bold text-primary">SheetSmith</a>
-        <p class="mt-2 text-sm text-text-light">
-          ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 จากโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด
+        <a href="/" class="flex items-center gap-2.5">
+          <img src="/logo.png" alt="SheetSmith" width="36" height="36" class="rounded-lg" />
+          <span class="font-heading text-xl font-bold">SheetSmith</span>
+        </a>
+        <p class="mt-3 text-sm text-white/70 leading-relaxed">
+          ชีทติวสอบเข้า ป.1 ม.1 ม.4 จากโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด
         </p>
       </div>
 
       <!-- Exam Links -->
       <div>
-        <h3 class="font-heading font-semibold text-text mb-3">ข้อสอบตามระดับชั้น</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="/exams/por1/" class="text-text-light hover:text-primary transition-colors">สอบเข้า ป.1</a></li>
-          <li><a href="/exams/mor1/" class="text-text-light hover:text-primary transition-colors">สอบเข้า ม.1</a></li>
-          <li><a href="/exams/mor4/" class="text-text-light hover:text-primary transition-colors">สอบเข้า ม.4</a></li>
-          <li><a href="/exams/" class="text-text-light hover:text-primary transition-colors">ข้อสอบทั้งหมด</a></li>
+        <h3 class="font-heading font-semibold text-secondary mb-4 text-sm tracking-wide uppercase">ข้อสอบตามระดับชั้น</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="/exams/por1/" class="text-white/70 hover:text-white transition-colors">สอบเข้า ป.1</a></li>
+          <li><a href="/exams/mor1/" class="text-white/70 hover:text-white transition-colors">สอบเข้า ม.1</a></li>
+          <li><a href="/exams/mor4/" class="text-white/70 hover:text-white transition-colors">สอบเข้า ม.4</a></li>
+          <li><a href="/exams/" class="text-white/70 hover:text-white transition-colors">ข้อสอบทั้งหมด</a></li>
         </ul>
       </div>
 
       <!-- Resources -->
       <div>
-        <h3 class="font-heading font-semibold text-text mb-3">แหล่งข้อมูล</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="/guides/" class="text-text-light hover:text-primary transition-colors">คู่มือเตรียมสอบ</a></li>
-          <li><a href="/blog/" class="text-text-light hover:text-primary transition-colors">บทความ</a></li>
-          <li><a href="/about/" class="text-text-light hover:text-primary transition-colors">เกี่ยวกับเรา</a></li>
-          <li><a href="/contact/" class="text-text-light hover:text-primary transition-colors">ติดต่อเรา</a></li>
+        <h3 class="font-heading font-semibold text-secondary mb-4 text-sm tracking-wide uppercase">แหล่งข้อมูล</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="/guides/" class="text-white/70 hover:text-white transition-colors">คู่มือเตรียมสอบ</a></li>
+          <li><a href="/blog/" class="text-white/70 hover:text-white transition-colors">บทความ</a></li>
+          <li><a href="/about/" class="text-white/70 hover:text-white transition-colors">เกี่ยวกับเรา</a></li>
+          <li><a href="/contact/" class="text-white/70 hover:text-white transition-colors">ติดต่อเรา</a></li>
         </ul>
       </div>
 
       <!-- Contact -->
       <div>
-        <h3 class="font-heading font-semibold text-text mb-3">ติดต่อเรา</h3>
-        <ul class="space-y-2 text-sm text-text-light">
-          <li class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-accent" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+        <h3 class="font-heading font-semibold text-secondary mb-4 text-sm tracking-wide uppercase">ติดต่อเรา</h3>
+        <ul class="space-y-3 text-sm text-white/70">
+          <li class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-secondary shrink-0">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            </span>
             LINE: @sheetsmith
           </li>
-          <li class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+          <li class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-secondary shrink-0">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/></svg>
+            </span>
             Facebook: SheetSmith
           </li>
-          <li class="flex items-center gap-2">
-            <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          <li class="flex items-center gap-2.5">
+            <span class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-secondary shrink-0">
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </span>
             info@sheetsmith.co.th
           </li>
         </ul>
       </div>
     </div>
 
-    <div class="mt-8 pt-8 border-t border-border text-center text-sm text-text-light">
+    <div class="mt-12 pt-8 border-t border-white/15 text-center text-sm text-white/50">
       <p>&copy; {currentYear} SheetSmith. สงวนลิขสิทธิ์ทุกประการ</p>
     </div>
   </div>
