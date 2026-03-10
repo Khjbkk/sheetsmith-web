@@ -38,19 +38,32 @@ const levelHrefs: Record<string, string> = {
     </h1>
 
     <!-- ข้อสอบแนะนำ -->
-    <a href="/exams/mor1-gifted-science.html" class="block group mb-10">
-      <div class="bg-gradient-to-r from-primary to-primary-dark rounded-xl p-5 md:p-6 text-white hover:shadow-lg transition-shadow flex items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-2 mb-1">
-            <span class="inline-block px-2 py-0.5 bg-white/20 rounded-full text-xs font-semibold">ใหม่!</span>
-            <span class="inline-block px-2 py-0.5 bg-white/20 rounded-full text-xs font-semibold">ฟรี</span>
+    <div class="space-y-3 mb-10">
+      <a href="/exams/mor1-gifted-math.html" class="block group">
+        <div class="bg-gradient-to-r from-primary to-primary-dark rounded-xl p-5 md:p-6 text-white hover:shadow-lg transition-shadow flex items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-block px-2 py-0.5 bg-white/20 rounded-full text-xs font-semibold">ใหม่!</span>
+              <span class="inline-block px-2 py-0.5 bg-white/20 rounded-full text-xs font-semibold">ฟรี</span>
+            </div>
+            <h2 class="font-heading text-lg md:text-xl font-bold group-hover:underline">ข้อสอบคณิตศาสตร์ สอบเข้า ม.1 ห้อง Gifted พร้อมเฉลยละเอียด</h2>
+            <p class="text-white/80 text-sm mt-1">แนวข้อสอบคณิตศาสตร์เตรียมสอบเข้า ม.1 ห้อง Gifted โรงเรียนชั้นนำ</p>
           </div>
-          <h2 class="font-heading text-lg md:text-xl font-bold group-hover:underline">ข้อสอบวิทยาศาสตร์ สอบเข้า ม.1 ห้อง Gifted พร้อมเฉลยละเอียด</h2>
-          <p class="text-white/80 text-sm mt-1">แนวข้อสอบวิทยาศาสตร์เตรียมสอบเข้า ม.1 ห้อง Gifted โรงเรียนชั้นนำ</p>
+          <span class="text-white/80 group-hover:text-white shrink-0">&rarr;</span>
         </div>
-        <span class="text-white/80 group-hover:text-white shrink-0">&rarr;</span>
-      </div>
-    </a>
+      </a>
+      <a href="/exams/mor1-gifted-science.html" class="block group">
+        <div class="bg-white border border-border rounded-xl p-4 md:p-5 hover:shadow-md hover:border-primary/30 transition-all flex items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="inline-block px-2 py-0.5 bg-primary-light text-primary text-xs font-semibold rounded-full">ฟรี</span>
+            </div>
+            <h3 class="font-heading text-base md:text-lg font-bold text-text group-hover:text-primary transition-colors">ข้อสอบวิทยาศาสตร์ สอบเข้า ม.1 ห้อง Gifted พร้อมเฉลยละเอียด</h3>
+          </div>
+          <span class="text-text-light group-hover:text-primary shrink-0 transition-colors">&rarr;</span>
+        </div>
+      </a>
+    </div>
 
     {levelInfo.map((level) => (
       <section class="mb-12">
