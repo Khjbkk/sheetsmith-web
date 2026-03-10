@@ -468,9 +468,6 @@ function render(filter) {
     </div>`;
   });
   // answer key
-  h += `<div class="answer-key"><h3>📋 ตารางเฉลยรวม <small style="font-weight:400;font-size:13px;color:var(--text-muted)">(คลิกเพื่อเปิด)</small></h3><div class="key-grid">`;
-  Q.forEach(q => { h += `<div class="key-cell" onclick="this.classList.toggle('show')"><span class="kn">${q.n}</span><span class="ka">${q.ans}</span></div>`; });
-  h += '</div></div>';
   c.innerHTML = h;
 }
 
