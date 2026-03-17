@@ -35,16 +35,14 @@ const orgSchema = {
   <head>
     <SEOHead {...props} />
     <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
-    <!-- GA4 placeholder — replace G-XXXXXXXXXX with real measurement ID -->
-    <!--
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-    <script>
+    <!-- Google Analytics (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0ND9TWZX6"></script>
+    <script is:inline>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-XXXXXXXXXX');
+      gtag('config', 'G-W0ND9TWZX6');
     </script>
-    -->
   </head>
   <body class="min-h-screen flex flex-col">
     <Header />
