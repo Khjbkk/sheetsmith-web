@@ -17,9 +17,22 @@ interface Props {
 const props = Astro.props;
 
 // Organization schema — ติดฝัน operated by บริษัท ซิโอร่า จำกัด
+// Editor entity (collective author) for E-E-A-T — ทีมงานติดฝัน is the named
+// author/editor team for pillar articles and curation decisions
+const editorSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${Astro.site?.toString()}#editorial-team`,
+  name: 'ทีมงานติดฝัน',
+  alternateName: 'TidFun Editorial Team',
+  description: 'ทีมบรรณาธิการของติดฝัน รวบรวม ตรวจสอบ และเขียนเนื้อหาเกี่ยวกับการเตรียมสอบเข้าโรงเรียนและมหาวิทยาลัยในประเทศไทย ทำงานภายใต้บริษัท ซิโอร่า จำกัด',
+  parentOrganization: { '@id': `${Astro.site?.toString()}#org` },
+};
+
 const orgSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': `${Astro.site?.toString()}#org`,
   name: 'ติดฝัน',
   alternateName: ['TidFun', 'tidfun'],
   legalName: 'บริษัท ซิโอร่า จำกัด',
@@ -33,6 +46,7 @@ const orgSchema = {
     'สถาบันกวดวิชา',
     'ติวเตอร์',
   ],
+  employee: { '@id': `${Astro.site?.toString()}#editorial-team` },
   contactPoint: {
     '@type': 'ContactPoint',
     email: 'info@tidfun.com',
@@ -63,6 +77,7 @@ const websiteSchema = {
   <head>
     <SEOHead {...props} />
     <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(editorSchema)} />
     <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
     <!-- Google Analytics (GA4) — replace measurement ID after creating new GA4 property for tidfun.org -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0ND9TWZX6"></script>

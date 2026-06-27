@@ -38,6 +38,7 @@ import urllib.request
 import urllib.error
 from pathlib import Path
 from datetime import date
+from typing import Optional, List, Dict
 
 try:
     import yaml
@@ -170,7 +171,7 @@ def thai_chars(s: str) -> int:
     return sum(1 for c in s if "฀" <= c <= "๿")
 
 
-def validate_enriched(d: dict) -> list[str]:
+def validate_enriched(d: dict) -> List[str]:
     """Anti-thin gate identical to validate_listings.py + schema enum checks."""
     errs = []
     if len(d.get("description_th", "")) < 200:
@@ -206,7 +207,7 @@ def validate_enriched(d: dict) -> list[str]:
     return errs
 
 
-def enrich_row(row: dict, model: str) -> dict | None:
+def enrich_row(row: dict, model: str) -> Optional[dict]:
     user_msg = f"""Institute info from Google Maps scrape:
 - Name: {row.get('name_th', '')}
 - Address: {row.get('address_th', '')}
