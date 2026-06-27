@@ -42,19 +42,38 @@ done
 mkdir -p .tmp
 
 if [ "$SKIP_SOURCE" = "0" ]; then
-  echo "═══ Phase 1: Source (Apify Google Maps) ═══"
-  # Phase 1 expansion — 6 new regional cities + 2 BKK keyword variants
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Nakhon Ratchasima, Thailand" --limit 8 --out .tmp/korat.csv
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Ubon Ratchathani, Thailand" --limit 8 --out .tmp/ubon.csv
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Udon Thani, Thailand" --limit 8 --out .tmp/udon.csv
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Phuket, Thailand" --limit 8 --out .tmp/phuket.csv
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Songkhla, Thailand" --limit 8 --out .tmp/songkhla.csv
-  python3 tools/source_listings.py --query "ติวเตอร์ ม.4" --location "Bangkok, Thailand" --limit 10 --out .tmp/bkk_mor4.csv
-  python3 tools/source_listings.py --query "ติวเตอร์ มหาวิทยาลัย" --location "Bangkok, Thailand" --limit 10 --out .tmp/bkk_uni.csv
+  echo "═══ Phase 1: Source (Apify Google Maps) — Scale to 300+ ═══"
+  # 5 new cities × ~10 records = ~50
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Pattaya, Chonburi, Thailand" --limit 10 --out .tmp/pattaya.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Rayong, Thailand" --limit 10 --out .tmp/rayong.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Hua Hin, Prachuap Khiri Khan, Thailand" --limit 10 --out .tmp/huahin.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Surat Thani, Thailand" --limit 10 --out .tmp/surat.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Nakhon Si Thammarat, Thailand" --limit 10 --out .tmp/nst.csv
+
+  # 4 BKK district expansion × ~10 = ~40
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา Sukhumvit" --location "Bangkok, Thailand" --limit 10 --out .tmp/sukhumvit.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา Silom" --location "Bangkok, Thailand" --limit 10 --out .tmp/silom.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา Ari" --location "Bangkok, Thailand" --limit 10 --out .tmp/ari.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา ลาดพร้าว" --location "Bangkok, Thailand" --limit 10 --out .tmp/latphrao.csv
+
+  # 4 existing-city deepen × ~8 = ~32
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Chiang Mai, Thailand" --limit 8 --out .tmp/cm_tutor.csv
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Khon Kaen, Thailand" --limit 8 --out .tmp/kk_tutor.csv
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Phuket, Thailand" --limit 8 --out .tmp/phuket_tutor.csv
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Nakhon Ratchasima, Thailand" --limit 8 --out .tmp/korat_tutor.csv
+
+  # 4 subject-specific × ~10 = ~40
+  python3 tools/source_listings.py --query "ติวภาษาอังกฤษ" --location "Bangkok, Thailand" --limit 10 --out .tmp/eng.csv
+  python3 tools/source_listings.py --query "ติวคณิตศาสตร์" --location "Bangkok, Thailand" --limit 10 --out .tmp/math.csv
+  python3 tools/source_listings.py --query "ติว IELTS" --location "Bangkok, Thailand" --limit 10 --out .tmp/ielts.csv
+  python3 tools/source_listings.py --query "ติว SAT" --location "Bangkok, Thailand" --limit 10 --out .tmp/sat.csv
 
   echo "═══ Merge CSVs ═══"
-  head -1 .tmp/korat.csv > .tmp/gmaps_merged.csv
-  for f in .tmp/korat.csv .tmp/ubon.csv .tmp/udon.csv .tmp/phuket.csv .tmp/songkhla.csv .tmp/bkk_mor4.csv .tmp/bkk_uni.csv; do
+  head -1 .tmp/pattaya.csv > .tmp/gmaps_merged.csv
+  for f in .tmp/pattaya.csv .tmp/rayong.csv .tmp/huahin.csv .tmp/surat.csv .tmp/nst.csv \
+           .tmp/sukhumvit.csv .tmp/silom.csv .tmp/ari.csv .tmp/latphrao.csv \
+           .tmp/cm_tutor.csv .tmp/kk_tutor.csv .tmp/phuket_tutor.csv .tmp/korat_tutor.csv \
+           .tmp/eng.csv .tmp/math.csv .tmp/ielts.csv .tmp/sat.csv; do
     tail -n +2 "$f" >> .tmp/gmaps_merged.csv
   done
   echo "  $(wc -l < .tmp/gmaps_merged.csv) rows (incl. header)"

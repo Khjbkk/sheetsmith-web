@@ -59,6 +59,7 @@ CRITICAL RULES:
 3. Tone: factual, helpful, concise. NO marketing fluff or hype
 4. Use names of REAL Thai schools (สาธิตจุฬา, สวนกุหลาบ, เตรียมอุดม, MWIT) only when context clearly suggests they target them
 5. All Thai text. No English unless brand names
+6. SUBJECT ENUM: use ONLY these subject IDs: math, science, physics, chemistry, biology, english, thai, social, iq, readiness, sat, ielts, toefl. Do NOT use gat, pat, o_net, gpa, "general", "all" — pick from the allowed enum only. For Thai TGAT/TPAT/A-Level prep, map to the underlying subject (e.g. "ติว TGAT คณิต" → math).
 
 LENGTH REQUIREMENTS — STRICT. Count Thai characters carefully. If you write less than the minimum, EXPAND with concrete examples, contextual detail, or additional benefits BEFORE returning the JSON.
 
@@ -166,6 +167,16 @@ def normalize_city(raw_city: str, address: str) -> str:
         return "phuket"
     if "songkhla" in s or "สงขลา" in s:
         return "songkhla"
+    if any(k in s for k in ["chonburi", "ชลบุรี", "pattaya", "พัทยา", "sriracha", "ศรีราชา", "bang saen", "บางแสน"]):
+        return "chonburi"
+    if "rayong" in s or "ระยอง" in s:
+        return "rayong"
+    if any(k in s for k in ["prachuap", "ประจวบ", "hua hin", "หัวหิน"]):
+        return "prachuap"
+    if any(k in s for k in ["surat thani", "สุราษฎร์ธานี", "surat"]):
+        return "surat-thani"
+    if any(k in s for k in ["nakhon si thammarat", "นครศรีธรรมราช"]):
+        return "nakhon-si-thammarat"
     return "bangkok"  # safe default
 
 
@@ -267,6 +278,18 @@ Produce the JSON object per schema. STRICT length requirements — every field M
         except json.JSONDecodeError as e:
             print(f"  ✗ JSON parse attempt {attempt+1}: {e}", file=sys.stderr)
             return None
+
+        # Post-process: filter invalid enum values before validation (avoids
+        # dead-end retries when the model insists on enum values like gat/pat
+        # that aren't in our schema)
+        if isinstance(parsed.get("subjects"), list):
+            parsed["subjects"] = [s for s in parsed["subjects"] if s in VALID_SUBJECTS]
+            if not parsed["subjects"]:
+                parsed["subjects"] = ["math"]  # conservative default
+        if isinstance(parsed.get("categories"), list):
+            parsed["categories"] = [c for c in parsed["categories"] if c in VALID_CATEGORIES]
+            if not parsed["categories"]:
+                parsed["categories"] = ["all"]
 
         errs = validate_enriched(parsed)
         if not errs:
