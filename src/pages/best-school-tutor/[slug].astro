@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { getCollection } from 'astro:content';
+
+// Programmatic SEO: one page per target school × tier (Bigfoot Haystack)
+export async function getStaticPaths() {
+  const schools = await getCollection('schools');
+  return schools.map((s) => ({
+    params: { slug: s.data.id },
+    props: { school: s.data },
+  }));
+}
+
+const { school } = Astro.props;
+const allListings = await getCollection('listings');
+const matching = allListings
+  .filter(l => l.data.target_schools.includes(school.id))
+  .sort((a, b) => (b.data.google_rating || 0) - (a.data.google_rating || 0));
+
+const categoryLabel: Record<string, string> = {
+  por1: 'เตรียมสอบเข้า ป.1',
+  mor1: 'เตรียมสอบเข้า ม.1',
+  mor4: 'เตรียมสอบเข้า ม.4',
+};
+
+const faq = [
+  {
+    question: `ติวเตอร์ไหนเตรียมเข้า ${school.name_th} ได้ดีที่สุด?`,
+    answer: matching.length > 0
+      ? `จากที่ติดฝันรวบรวม สถาบันที่ระบุว่าเชี่ยวชาญแนวข้อสอบของ${school.name_th}มี ${matching.length} สถาบัน เรียงตามคะแนนรีวิว Google สถาบันอันดับหนึ่งคือ ${matching[0].data.name_th} ${matching[0].data.google_rating ? '(' + matching[0].data.google_rating.toFixed(1) + ' ★)' : ''} ทุกสถาบันแนะนำให้ทดลองเรียน 1-2 ครั้งก่อนตัดสินใจ`
+      : `ติดฝันยังกำลังรวบรวมสถาบันที่เตรียมเข้า${school.name_th} ถ้ารู้จักสถาบันที่ดี ส่งคำแนะนำให้เราเพิ่ม`,
+  },
+  {
+    question: `เริ่มเตรียมสอบ ${school.name_th} เมื่อไหร่ดี?`,
+    answer: school.level === 'por1'
+      ? 'แนะนำเริ่มเตรียม 6-12 เดือนก่อนวันสอบ หรือเมื่อลูกอายุ 4-5 ขวบ ระยะแรกเน้นทักษะพื้นฐาน ไม่ต้องเร่งทำข้อสอบจริงทันที'
+      : school.level === 'mor1'
+      ? 'แนะนำเริ่มตั้งแต่ ป.5 เพื่อมีเวลา 12-18 เดือน ปูพื้นฐานคณิต-วิทย์ก่อนเข้มข้นที่ข้อสอบจริง'
+      : 'แนะนำเริ่มตั้งแต่ ม.2 เพื่อมีเวลา 18-24 เดือน เริ่มเรียนเนื้อหา ม.ปลายล่วงหน้าและฝึกข้อสอบโอลิมปิก',
+  },
+  {
+    question: `ค่าเตรียมสอบเข้า ${school.name_th} เฉลี่ยเท่าไหร่?`,
+    answer: school.level === 'por1'
+      ? 'งบประหยัด 20,000-50,000 บาทตลอดคอร์ส งบกลาง 50,000-100,000 บาท งบพรีเมียม 100,000-200,000+ บาท ระยะเวลาเฉลี่ย 6-12 เดือน'
+      : school.level === 'mor1'
+      ? 'งบประหยัด 30,000-80,000 บาทตลอดคอร์ส งบกลาง 80,000-150,000 บาท งบพรีเมียม 150,000-300,000+ บาท ระยะเวลาเฉลี่ย 12-18 เดือน'
+      : 'งบประหยัด 50,000-120,000 บาทตลอดคอร์ส งบกลาง 120,000-250,000 บาท งบพรีเมียม 250,000-500,000+ บาท ระยะเวลาเฉลี่ย 18-24 เดือน',
+  },
+  {
+    question: `ถ้าไม่ติด ${school.name_th} ทำอย่างไรต่อ?`,
+    answer: `การไม่ติดโรงเรียนหนึ่งไม่ใช่จุดจบ มีโรงเรียนคุณภาพสูงในระดับเดียวกันหลายแห่ง ติดฝันแนะนำให้สมัครสอบหลายโรงเรียนเพื่อเพิ่มโอกาส โฟกัสที่คุณภาพการศึกษาระยะยาวมากกว่าชื่อสถาบัน เด็กที่ไม่ติด ${school.name_th} ในรอบแรกสามารถสอบใหม่หรือเข้าโรงเรียนอื่นที่คุณภาพไม่แพ้กัน`,
+  },
+];
+
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `ติวเตอร์ที่ดีที่สุดสำหรับ ${school.name_th}`,
+  url: `https://${Astro.site?.host}/best-school-tutor/${school.id}/`,
+  about: { '@type': 'EducationalOrganization', name: school.full_name_th, alternateName: school.name_th },
+  mainEntity: {
+    '@type': 'ItemList',
+    itemListElement: matching.map((l, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      name: l.data.name_th,
+      url: `${Astro.site}listing/${l.id}/`,
+    })),
+  },
+};
+---
+
+<BaseLayout
+  title={`ติวเตอร์ที่ดีที่สุดสำหรับ ${school.name_th} 2569 — รวมสถาบันและติวเตอร์ที่เชี่ยวชาญ`}
+  description={`เปรียบเทียบสถาบันและติวเตอร์ที่เชี่ยวชาญเตรียมสอบเข้า ${school.full_name_th} อันดับจากคะแนนรีวิว Google ค่าเรียน เริ่มเตรียมเมื่อไหร่ และเลือกอย่างไร`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: categoryLabel[school.level] || 'เตรียมสอบเข้า', href: `/category/${school.level}/` },
+      { label: school.name_th },
+    ]} />
+
+    <header class="mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        ติวเตอร์ที่ดีที่สุดสำหรับเตรียมสอบเข้า {school.name_th} 2569
+      </h1>
+      <p class="text-sm text-gray-500 mb-4">{school.full_name_th}</p>
+      <p class="text-gray-700 leading-relaxed">{school.description_th}</p>
+    </header>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">อันดับสถาบัน ({matching.length} รายการ)</h2>
+      <p class="text-gray-600 mb-6">เรียงตามคะแนนรีวิว Google และจำนวนรีวิว ทดลองเรียน 1-2 ที่ก่อนตัดสินใจ</p>
+
+      {matching.length > 0 ? (
+        <div class="space-y-4">
+          {matching.map((l, i) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-5 flex items-start gap-4">
+              <div class="text-3xl font-bold text-indigo-600 shrink-0 w-12 text-center">#{i + 1}</div>
+              <div class="flex-1">
+                <a href={`/listing/${l.id}/`} class="block group">
+                  <h3 class="font-bold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors mb-1">{l.data.name_th}</h3>
+                  <p class="text-xs text-gray-500 mb-2">{l.data.district ? l.data.district + ' · ' : ''}{l.data.city} · {l.data.quick_facts.price_range}</p>
+                </a>
+                <p class="text-sm text-gray-600 leading-relaxed mb-2 line-clamp-2">{l.data.description_th.slice(0, 180)}...</p>
+                {l.data.google_rating && (
+                  <p class="text-sm">
+                    <span class="text-amber-500">★</span>
+                    <span class="font-semibold text-gray-900">{l.data.google_rating.toFixed(1)}</span>
+                    <span class="text-gray-500">({l.data.google_review_count} รีวิว)</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+          <p class="text-gray-700 font-medium mb-2">ติดฝันยังไม่มีสถาบันที่ระบุว่าเชี่ยวชาญแนวข้อสอบ {school.name_th}</p>
+          <p class="text-sm text-gray-600 mb-4">รู้จักสถาบันที่ดี? ส่งคำแนะนำให้เราเพิ่มเข้า directory</p>
+          <a href="/contact/" class="inline-block px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors text-sm">แนะนำสถาบัน</a>
+        </div>
+      )}
+    </section>
+
+    <FAQSection items={faq} title={`คำถามที่พบบ่อย — เตรียมสอบ ${school.name_th}`} />
+  </div>
+</BaseLayout>

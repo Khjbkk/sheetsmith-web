@@ -1,0 +1,70 @@
+---
+interface Props {
+  ratings?: {
+    google?: { rating: number; count: number };
+    facebook?: { rating: number; count: number };
+    pantip_mentions?: number;
+    wongnai?: { rating: number; count: number };
+  };
+  google_rating?: number;
+  google_review_count?: number;
+}
+const { ratings, google_rating, google_review_count } = Astro.props;
+
+// Compute pooled average across sources that have a rating (Bigfoot §7 "poll of polls")
+const items: { label: string; rating?: number; count?: number; mentions?: number; icon: string }[] = [];
+if (ratings?.google || google_rating) {
+  items.push({
+    label: 'Google',
+    rating: ratings?.google?.rating ?? google_rating,
+    count: ratings?.google?.count ?? google_review_count,
+    icon: '🅖',
+  });
+}
+if (ratings?.facebook) items.push({ label: 'Facebook', rating: ratings.facebook.rating, count: ratings.facebook.count, icon: '📘' });
+if (ratings?.wongnai) items.push({ label: 'Wongnai', rating: ratings.wongnai.rating, count: ratings.wongnai.count, icon: '🍜' });
+if (ratings?.pantip_mentions) items.push({ label: 'Pantip', mentions: ratings.pantip_mentions, icon: '💬' });
+
+const withRatings = items.filter(i => typeof i.rating === 'number');
+const pooledRating = withRatings.length
+  ? withRatings.reduce((s, i) => s + (i.rating || 0) * (i.count || 1), 0) / withRatings.reduce((s, i) => s + (i.count || 1), 0)
+  : null;
+const totalReviews = withRatings.reduce((s, i) => s + (i.count || 0), 0);
+---
+
+{items.length > 0 && (
+  <section class="my-6 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5">
+    <h3 class="font-bold text-amber-900 mb-3">คะแนนรีวิวจากหลายแหล่ง</h3>
+
+    {pooledRating !== null && (
+      <div class="flex items-baseline gap-2 mb-4">
+        <span class="text-3xl font-bold text-gray-900">{pooledRating.toFixed(1)}</span>
+        <span class="text-amber-500 text-lg">★</span>
+        <span class="text-sm text-gray-600">เฉลี่ยถ่วงน้ำหนักจาก {totalReviews}+ รีวิว</span>
+      </div>
+    )}
+
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      {items.map((i) => (
+        <div class="bg-white rounded-lg p-3 border border-amber-100">
+          <p class="text-xs text-gray-500 mb-1">{i.icon} {i.label}</p>
+          {i.rating !== undefined ? (
+            <>
+              <p class="font-bold text-gray-900">{i.rating.toFixed(1)} <span class="text-amber-500">★</span></p>
+              <p class="text-xs text-gray-500">{i.count} รีวิว</p>
+            </>
+          ) : (
+            <>
+              <p class="font-bold text-gray-900">{i.mentions}</p>
+              <p class="text-xs text-gray-500">การกล่าวถึง</p>
+            </>
+          )}
+        </div>
+      ))}
+    </div>
+
+    <p class="text-xs text-gray-500 mt-3">
+      ติดฝันรวบรวมจากแหล่งสาธารณะ ไม่ใช่การประเมินของทีมงาน คะแนนเฉลี่ยถ่วงน้ำหนักตามจำนวนรีวิวแต่ละแหล่ง
+    </p>
+  </section>
+)}

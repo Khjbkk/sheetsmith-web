@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import FAQSection from '../../components/FAQSection.astro';
+import MultiSourceRating from '../../components/MultiSourceRating.astro';
 import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
@@ -141,6 +142,8 @@ const faqSchema = {
       <h2 class="text-xl font-bold text-gray-900 mb-3">เกี่ยวกับ {d.name_th}</h2>
       <p class="text-gray-700 leading-relaxed">{d.description_th}</p>
     </section>
+
+    <MultiSourceRating ratings={d.multi_source_ratings} google_rating={d.google_rating} google_review_count={d.google_review_count} />
 
     <!-- Speakable AEO paragraphs -->
     <section class="mb-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">

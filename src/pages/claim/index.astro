@@ -4,53 +4,178 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
 ---
 
 <BaseLayout
-  title="เคลมหรือเพิ่มสถาบันของคุณ ฟรี"
+  title="เพิ่ม/เคลมสถาบันของคุณ ฟรี"
   description="เจ้าของสถาบันกวดวิชาหรือติวเตอร์อิสระ เพิ่มสถาบันของคุณบน ติดฝัน ฟรี เข้าถึงผู้ปกครองที่กำลังหาที่ติว"
 >
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
     <Breadcrumb items={[{ label: 'เพิ่ม/เคลมสถาบัน' }]} />
 
     <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">เพิ่มสถาบันของคุณ ฟรี</h1>
-    <p class="text-gray-600 mb-8">เจ้าของสถาบันกวดวิชาหรือติวเตอร์อิสระ เพิ่มสถาบันของคุณบนติดฝัน เข้าถึงผู้ปกครองที่กำลังหาที่ติว — ฟรี ไม่มีค่าธรรมเนียมเริ่มต้น</p>
+    <p class="text-gray-600 mb-8">เจ้าของสถาบันกวดวิชาหรือติวเตอร์อิสระ ลงทะเบียนเพื่อเข้าถึงผู้ปกครองที่กำลังตัดสินใจเลือกที่ติวให้ลูก ฟรี ไม่มีค่าธรรมเนียมเริ่มต้น</p>
 
     <div class="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-8">
-      <h2 class="font-bold text-amber-900 mb-2">ทำไมต้องเพิ่มสถาบันบนติดฝัน?</h2>
+      <h2 class="font-bold text-amber-900 mb-2">ทำไมต้องเพิ่มสถาบันบน ติดฝัน?</h2>
       <ul class="text-sm text-amber-900 space-y-1.5 list-disc list-inside">
-        <li>เข้าถึงพ่อแม่ที่กำลังตัดสินใจอย่างจริงจัง</li>
+        <li>เข้าถึงผู้ปกครองที่กำลังตัดสินใจอย่างจริงจัง (high-intent)</li>
         <li>ฟรี ไม่มีค่าธรรมเนียมการลงทะเบียน</li>
-        <li>มีระบบ verified badge เมื่อยืนยันข้อมูล</li>
-        <li>SEO ดีกว่าหน้า Facebook ของคุณเอง</li>
+        <li>SEO ดีกว่าหน้า Facebook ของคุณเอง (ติดอันดับ Google)</li>
+        <li>มี verified badge เมื่อยืนยันข้อมูล</li>
+        <li>ตำแหน่ง featured + lead generation มีให้เลือกเสริมภายหลัง</li>
       </ul>
     </div>
 
-    <div class="bg-white border border-gray-200 rounded-xl p-6 mb-8">
-      <h2 class="font-bold text-gray-900 mb-4">วิธีเพิ่มสถาบัน</h2>
-      <p class="text-gray-700 mb-4">ส่งข้อมูลผ่านอีเมลหรือ LINE หลังจากเปิด <strong>ฟอร์มออนไลน์</strong> เร็วๆ นี้</p>
-      <p class="text-sm text-gray-600 mb-2">ระหว่างนี้ ส่งข้อมูลต่อไปนี้ทาง email <strong>info@tidfun.com</strong> หรือ LINE <strong>@tidfun</strong>:</p>
-      <ol class="text-sm text-gray-700 space-y-1.5 list-decimal list-inside">
-        <li>ชื่อสถาบัน (ไทย + อังกฤษถ้ามี)</li>
-        <li>ที่อยู่ + เมือง/เขต</li>
-        <li>เบอร์โทร / LINE / Facebook / Website / Email</li>
-        <li>ระดับชั้นที่สอน (ป.1, ม.1, ม.4, มหาลัย)</li>
-        <li>วิชาที่สอน</li>
-        <li>โรงเรียนเป้าหมายที่เตรียมเข้า</li>
-        <li>คำอธิบายสถาบัน (200-400 คำ)</li>
-        <li>ราคาเริ่มต้น</li>
-        <li>ขนาดห้องเรียน</li>
-        <li>รูปแบบการเรียน (พบหน้า/ออนไลน์/Hybrid)</li>
-        <li>หลักฐานการเป็นเจ้าของ (สำคัญ — เพื่อรับ verified badge)</li>
-      </ol>
-      <p class="text-sm text-gray-600 mt-4">ทีมงานจะตอบกลับและตรวจสอบภายใน 2-3 วันทำการ</p>
-    </div>
+    <!-- Multi-step claim form -->
+    <form id="claim-form" action="https://formspree.io/f/your-form-id" method="post" class="bg-white border border-gray-200 rounded-2xl p-8 mb-8 shadow-sm">
+      <div id="step-progress" class="mb-6">
+        <div class="flex justify-between text-xs text-gray-500 mb-2"><span id="step-label">ขั้นตอน 1 จาก 4</span><span id="step-percent">25%</span></div>
+        <div class="w-full bg-gray-200 rounded-full h-2"><div id="step-bar" class="bg-indigo-600 h-2 rounded-full transition-all" style="width: 25%"></div></div>
+      </div>
 
-    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6">
-      <h2 class="font-bold text-indigo-900 mb-3">บริการเสริม (ไม่บังคับ)</h2>
-      <ul class="text-sm text-indigo-900 space-y-2">
-        <li><strong>Featured placement</strong> — แสดงในตำแหน่งบนสุดของหน้าค้นหา (฿2,000-10,000/เดือน)</li>
-        <li><strong>Newsletter sponsorship</strong> — โฆษณาในจดหมายข่าวสำหรับผู้ปกครอง (฿5,000+/ฉบับ)</li>
-        <li><strong>Lead generation</strong> — รับ lead ผู้ปกครองที่ตรงกับ profile (฿100-500/lead)</li>
-      </ul>
-      <p class="text-sm text-indigo-900 mt-3">สนใจ ติดต่อ info@tidfun.com</p>
+      <div id="form-step-1" class="form-step">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">1. ข้อมูลสถาบัน</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสถาบัน (ไทย) <span class="text-red-500">*</span></label>
+            <input name="name_th" required class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อสถาบัน (อังกฤษ)</label>
+            <input name="name_en" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ประเภท <span class="text-red-500">*</span></label>
+            <select name="type" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+              <option value="">เลือก</option>
+              <option value="cram_school">สถาบันกวดวิชา</option>
+              <option value="franchise">แฟรนไชส์</option>
+              <option value="private_tutor">ติวเตอร์ส่วนตัว</option>
+              <option value="online_only">ออนไลน์เท่านั้น</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">เมือง <span class="text-red-500">*</span></label>
+            <select name="city" required class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+              <option value="">เลือก</option>
+              <option value="bangkok">กรุงเทพ</option>
+              <option value="nonthaburi">นนทบุรี</option>
+              <option value="samutprakan">สมุทรปราการ</option>
+              <option value="pathumthani">ปทุมธานี</option>
+              <option value="chiangmai">เชียงใหม่</option>
+              <option value="khonkaen">ขอนแก่น</option>
+              <option value="hatyai">หาดใหญ่</option>
+              <option value="online">ออนไลน์</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div id="form-step-2" class="form-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">2. รายละเอียดการสอน</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ระดับชั้นที่สอน <span class="text-red-500">*</span></label>
+            <div class="space-y-1">
+              <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="por1" /> ป.1 (โรงเรียนสาธิต)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="mor1" /> ม.1 (โรงเรียนชั้นนำ)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="mor4" /> ม.4 (เตรียมอุดม/MWIT)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="categories" value="uni" /> มหาวิทยาลัย (TCAS/SAT)</label>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">รูปแบบการเรียน</label>
+            <div class="space-y-1">
+              <label class="flex items-center gap-2"><input type="checkbox" name="format" value="in_person" /> พบหน้า in-person</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="format" value="online" /> ออนไลน์ Zoom</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="format" value="hybrid" /> Hybrid</label>
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ช่วงราคาต่อเดือน</label>
+            <input name="price_range" placeholder="เช่น ฿2,500-5,500/เดือน" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+        </div>
+      </div>
+
+      <div id="form-step-3" class="form-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">3. ช่องทางติดต่อ</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ที่อยู่</label>
+            <textarea name="address_th" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">เบอร์โทร</label>
+            <input name="phone" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">LINE ID</label>
+            <input name="line_id" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">เว็บไซต์</label>
+            <input name="website" type="url" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
+            <input name="facebook_url" type="url" class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+        </div>
+      </div>
+
+      <div id="form-step-4" class="form-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">4. ข้อมูลเจ้าของและคำอธิบาย</h2>
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">ชื่อผู้ติดต่อ (เจ้าของ/ผู้รับผิดชอบ) <span class="text-red-500">*</span></label>
+            <input name="contact_name" required class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email สำหรับติดต่อกลับ <span class="text-red-500">*</span></label>
+            <input name="contact_email" type="email" required class="w-full px-3 py-2 border border-gray-300 rounded-lg" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">คำอธิบายสถาบัน (200-400 คำ — เน้นจุดเด่นและสิ่งที่ลูกค้าได้รับ)</label>
+            <textarea name="description_th" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea>
+          </div>
+          <div>
+            <label class="flex items-start gap-2 text-sm">
+              <input type="checkbox" name="agree" required class="mt-1" />
+              <span>ฉันยืนยันว่าเป็นเจ้าของหรือผู้ได้รับมอบอำนาจของสถาบันนี้จริง และยอมรับ <a href="/terms/" class="text-indigo-600 hover:underline">ข้อกำหนดการใช้งาน</a></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex justify-between mt-6">
+        <button type="button" id="prev-btn" class="px-5 py-2 text-gray-600 hover:text-gray-900 text-sm hidden">← ย้อนกลับ</button>
+        <button type="button" id="next-btn" class="ml-auto px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium transition-colors">ถัดไป →</button>
+        <button type="submit" id="submit-btn" class="ml-auto px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors hidden">ส่งคำขอ ✓</button>
+      </div>
+    </form>
+
+    <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6 text-sm">
+      <p class="text-indigo-900">หลังจากส่งคำขอ ทีมงานจะตรวจสอบและเปิดให้แสดงผลภายใน 2-3 วันทำการ คุณจะได้รับอีเมลยืนยันที่ Email ที่ระบุไว้</p>
     </div>
   </div>
+
+  <script is:inline>
+    let step = 1;
+    const total = 4;
+    const prev = document.getElementById('prev-btn');
+    const next = document.getElementById('next-btn');
+    const submit = document.getElementById('submit-btn');
+    function show(n) {
+      document.querySelectorAll('.form-step').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`form-step-${n}`).classList.remove('hidden');
+      const pct = (n / total) * 100;
+      document.getElementById('step-bar').style.width = pct + '%';
+      document.getElementById('step-label').textContent = `ขั้นตอน ${n} จาก ${total}`;
+      document.getElementById('step-percent').textContent = pct + '%';
+      prev.classList.toggle('hidden', n === 1);
+      next.classList.toggle('hidden', n === total);
+      submit.classList.toggle('hidden', n !== total);
+    }
+    next.addEventListener('click', () => { if (step < total) { step++; show(step); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+    prev.addEventListener('click', () => { if (step > 1) { step--; show(step); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+  </script>
 </BaseLayout>

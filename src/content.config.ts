@@ -57,6 +57,14 @@ const listingCollection = defineCollection({
     google_rating: z.number().min(0).max(5).optional(),
     google_review_count: z.number().int().min(0).optional(),
 
+    // L4b — MULTI-SOURCE RATINGS (Bigfoot §7 "Zillow block": poll-of-polls trust signal)
+    multi_source_ratings: z.object({
+      google: z.object({ rating: z.number().min(0).max(5), count: z.number().int().min(0) }).optional(),
+      facebook: z.object({ rating: z.number().min(0).max(5), count: z.number().int().min(0) }).optional(),
+      pantip_mentions: z.number().int().min(0).optional(),
+      wongnai: z.object({ rating: z.number().min(0).max(5), count: z.number().int().min(0) }).optional(),
+    }).optional(),
+
     // L5 — FRESHNESS
     data_freshness_date: z.coerce.date(),
     sources: z.array(z.string()).min(1),
