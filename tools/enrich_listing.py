@@ -1,100 +1,383 @@
 #!/usr/bin/env python3
 """
-enrich_listing.py — Bigfoot Blueprint L3 enrichment via OpenAI.
+enrich_listing.py — Bigfoot §3 L3 enrichment via OpenAI.
 
-Reads a raw listings CSV (L1 fields) and uses OpenAI to generate:
-  - description_th (200-400 Thai words)
-  - speakable_th (3 voice paragraphs — first sentence answers the question)
-  - faq (10 questions parents ask, 80-200 char answers each)
-  - quick_facts (price_range, class_size, format, age_range)
-
-Outputs Markdown files with YAML frontmatter to src/content/listings/.
-Each output passes the Zod anti-thin gate in content.config.ts.
+Reads the L1 CSV from source_listings.py / source_facebook.py, calls OpenAI
+to produce L3 content (description, speakable, FAQ, quick_facts), validates
+against the Zod anti-thin gate, and writes one Markdown file per listing to
+src/content/listings/.
 
 Requires:
-  - OPENAI_API_KEY (env) — get at https://platform.openai.com/api-keys (≥ $10 wallet)
-  - pip install openai pyyaml
+  - OPENAI_API_KEY in environment (wallet ≥ $5; this script uses ~$0.02/row
+    on gpt-4o, ~$0.001/row on gpt-4o-mini)
+  - pip install pyyaml
 
 Usage:
-  python3 tools/enrich_listing.py --input .tmp/raw_listings.csv --out src/content/listings/
+  export OPENAI_API_KEY=sk-proj-xxxxx
+  python3 tools/enrich_listing.py \\
+      --input .tmp/gmaps_merged.csv \\
+      --model gpt-4o \\
+      --out src/content/listings/
+
+  # Cheap mode (5x cheaper, lower Thai quality):
+  python3 tools/enrich_listing.py --input .tmp/raw.csv --model gpt-4o-mini
+
+Anti-thin gate: each output is validated for description ≥ 200 chars,
+speakable[3] × 50+ chars, faq ≥ 5 × 80+ chars. Rows that fail are
+written to .tmp/enrich_failures.csv for manual review.
 """
 import argparse
 import csv
+import hashlib
 import json
 import os
 import re
 import sys
+import time
+import urllib.request
+import urllib.error
 from pathlib import Path
 from datetime import date
 
+try:
+    import yaml
+except ImportError:
+    print("Install: pip install pyyaml", file=sys.stderr)
+    sys.exit(1)
 
-SYSTEM_PROMPT = """\
-You are content writer for ติดฝัน (TidFun), a Thai directory of tutoring services and cram schools.
-Given basic info about a tutoring institute, you produce structured Thai content optimized for AI answer engines (Google AI Overviews, ChatGPT search, Perplexity) and for Thai parents looking for the right place for their child.
 
-Output JSON with these exact keys:
-  description_th: string (200-400 Thai characters, factual, no marketing fluff)
-  speakable_th: array of exactly 3 strings (each 50-120 Thai characters; first sentence directly answers the implicit question)
-  faq: array of exactly 6 objects with {question, answer}; answers 80-200 Thai characters
-  quick_facts: {price_range, class_size, format (array), age_range}
-  categories: array from [por1, mor1, mor4, uni, all]
-  subjects: array from [math, science, physics, chemistry, biology, english, thai, social, iq, readiness, sat, ielts, toefl]
-  pricing_tier: one of [budget, mid, premium]
-  type: one of [cram_school, franchise, private_tutor, online_only]
+OPENAI_API = "https://api.openai.com/v1/chat/completions"
 
-Do not invent specific statistics, year-by-year admission rates, or testimonials.
-Stay general but specific to the niche.
-Output JSON ONLY, no markdown wrapper."""
+SYSTEM_PROMPT = """You are a content writer for ติดฝัน (TidFun), a Thai directory of tutoring services and cram schools.
+
+Given basic info about a tutoring institute (name, address, phone, Google rating), you produce structured Thai content optimized for AI answer engines (Google AI Overviews, ChatGPT search, Perplexity) and Thai parents looking for the right tutor for their child.
+
+CRITICAL RULES:
+1. Do NOT fabricate specific statistics like "X students per year passed" or "Y% pass rate" — use general phrasing instead
+2. Pricing should be RANGE ESTIMATES prefixed with "ประมาณ" — base on type (cram_school vs private_tutor) and city signal
+3. Tone: factual, helpful, concise. NO marketing fluff or hype
+4. Use names of REAL Thai schools (สาธิตจุฬา, สวนกุหลาบ, เตรียมอุดม, MWIT, etc.) only when the institute name or context clearly suggests they target them
+5. All Thai text. No English mixed in unless brand names (TidFun, MWIT, SAT, etc.)
+6. Be honest about uncertainty — if the address looks online-only, write online_only; if no signal of specific subjects, write conservative
+
+OUTPUT MUST BE VALID JSON matching this schema:
+{
+  "description_th": "200-400 Thai characters. What the institute does, who they target, methodology.",
+  "speakable_th": [
+    "50-120 chars. Overview — first sentence answers 'What is this institute?'",
+    "50-120 chars. Pricing — first sentence answers 'How much does it cost?'",
+    "50-120 chars. Teachers/class — first sentence answers 'Who teaches and how big is class?'"
+  ],
+  "faq": [
+    {"question": "6 questions Thai parents commonly ask", "answer": "80-200 Thai chars each"}
+  ],
+  "quick_facts": {
+    "price_range": "เช่น ฿2,500-5,500/เดือน (estimate)",
+    "class_size": "เช่น 10-15 คน/ห้อง",
+    "format": ["in_person" or "online" or "hybrid"],
+    "age_range": "เช่น 10-12 ปี (ป.5-ป.6)"
+  },
+  "pricing_tier": "budget | mid | premium",
+  "methodology_th": "100-200 char teaching approach summary",
+  "specialties": ["array of 2-5 short specialty tags in snake_case English"],
+  "categories": ["por1"|"mor1"|"mor4"|"uni"|"all"],
+  "subjects": ["math"|"science"|"physics"|"chemistry"|"biology"|"english"|"thai"|"social"|"iq"|"readiness"|"sat"|"ielts"|"toefl"],
+  "target_schools": ["satit-chula-por1"|"suankularb-mor1"|"triam-udom-mor4"|...],
+  "type": "cram_school | franchise | private_tutor | online_only"
+}"""
+
+
+VALID_CATEGORIES = {"por1", "mor1", "mor4", "uni", "all"}
+VALID_SUBJECTS = {"math", "science", "physics", "chemistry", "biology", "english", "thai", "social", "iq", "readiness", "sat", "ielts", "toefl"}
+VALID_TYPES = {"cram_school", "franchise", "private_tutor", "online_only"}
+VALID_FORMATS = {"in_person", "online", "hybrid"}
+VALID_TIERS = {"budget", "mid", "premium"}
+
+KNOWN_SCHOOL_IDS = {
+    # por1
+    "satit-chula-por1", "satit-kaset-por1", "satit-prasanmit-por1", "satit-patumwan-por1",
+    "satit-rangsit-por1", "satit-mahanakorn-por1", "amnuayniwet-por1",
+    # mor1
+    "suankularb-mor1", "satit-patumwan-mor1", "satit-prasanmit-mor1", "bodindecha-mor1",
+    "triamudompattanakarn-mor1", "samsen-mor1", "satriwithaya-mor1", "thepsirin-mor1",
+    "satit-kaset-mor1", "yothinburana-mor1", "horwang-mor1", "swk-nonthaburi-mor1",
+    "satit-chula-mor1",
+    # mor4
+    "triam-udom-mor4", "mwit-mor4", "kvis-mor4", "principal-mor4", "satit-chula-mor4",
+    "satit-patumwan-mor4", "satit-prasanmit-mor4", "bodindecha-mor4", "samsen-mor4",
+    "suankularb-mor4", "satit-kaset-mor4", "yvis-cmu-mor4", "satit-kku-mor4",
+    "saint-gabriel-mor4", "assumption-mor4", "kpc-mor4", "mater-dei-mor4",
+}
+
+
+def slugify(name: str, place_id: str = "") -> str:
+    """Generate a stable filename slug. Prefer ASCII transliteration; fall back to hash."""
+    s = name.lower().strip()
+    ascii_part = re.sub(r"[^a-z0-9]+", "-", s)[:30].strip("-")
+    h = hashlib.md5((name + place_id).encode("utf-8")).hexdigest()[:6]
+    return f"{ascii_part}-{h}" if ascii_part else f"listing-{h}"
+
+
+def normalize_city(raw_city: str, address: str) -> str:
+    """Map raw city/address to our city enum."""
+    s = ((raw_city or "") + " " + (address or "")).lower()
+    if any(k in s for k in ["bangkok", "กรุงเทพ", "phyathai", "watthana", "พญาไท", "วัฒนา", "ปทุมวัน", "สุขุมวิท", "จตุจักร", "สีลม"]):
+        return "bangkok"
+    if any(k in s for k in ["nonthaburi", "นนทบุรี"]):
+        return "nonthaburi"
+    if any(k in s for k in ["samut prakan", "สมุทรปราการ", "bang phli", "บางพลี"]):
+        return "samutprakan"
+    if any(k in s for k in ["pathum thani", "ปทุมธานี", "rangsit", "รังสิต"]):
+        return "pathumthani"
+    if any(k in s for k in ["chiang mai", "เชียงใหม่", "chiangmai"]):
+        return "chiangmai"
+    if any(k in s for k in ["khon kaen", "ขอนแก่น"]):
+        return "khonkaen"
+    if any(k in s for k in ["hat yai", "หาดใหญ่", "hatyai"]):
+        return "hatyai"
+    return "bangkok"  # safe default — most data is BKK
+
+
+def call_openai(payload: dict, retries: int = 3) -> dict:
+    api_key = os.environ["OPENAI_API_KEY"]
+    last_err = None
+    for attempt in range(retries):
+        req = urllib.request.Request(
+            OPENAI_API,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=90) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode("utf-8", errors="replace")[:300]
+            last_err = f"HTTP {e.code}: {body}"
+            if e.code in (429, 500, 502, 503, 504):
+                time.sleep(2 ** attempt)
+                continue
+            raise RuntimeError(last_err)
+        except Exception as e:
+            last_err = str(e)
+            time.sleep(2 ** attempt)
+    raise RuntimeError(f"OpenAI failed after {retries} attempts: {last_err}")
+
+
+def thai_chars(s: str) -> int:
+    return sum(1 for c in s if "฀" <= c <= "๿")
+
+
+def validate_enriched(d: dict) -> list[str]:
+    """Anti-thin gate identical to validate_listings.py + schema enum checks."""
+    errs = []
+    if len(d.get("description_th", "")) < 200:
+        errs.append(f"description_th too short ({len(d.get('description_th',''))} chars)")
+    sp = d.get("speakable_th", [])
+    if len(sp) != 3:
+        errs.append(f"speakable_th must have 3 items (has {len(sp)})")
+    for i, s in enumerate(sp):
+        if len(s) < 50:
+            errs.append(f"speakable_th[{i}] too short ({len(s)} chars)")
+    faq = d.get("faq", [])
+    if len(faq) < 5:
+        errs.append(f"faq must have ≥ 5 items (has {len(faq)})")
+    for i, f in enumerate(faq):
+        if len(f.get("answer", "")) < 80:
+            errs.append(f"faq[{i}].answer too short ({len(f.get('answer',''))} chars)")
+    qf = d.get("quick_facts", {})
+    for k in ("price_range", "class_size", "format", "age_range"):
+        if not qf.get(k):
+            errs.append(f"quick_facts.{k} missing")
+    if qf.get("format") and not all(f in VALID_FORMATS for f in qf["format"]):
+        errs.append(f"quick_facts.format invalid")
+    cats = d.get("categories", [])
+    if not cats or not all(c in VALID_CATEGORIES for c in cats):
+        errs.append(f"categories invalid: {cats}")
+    subs = d.get("subjects", [])
+    if not subs or not all(s in VALID_SUBJECTS for s in subs):
+        errs.append(f"subjects invalid: {subs}")
+    if d.get("type") not in VALID_TYPES:
+        errs.append(f"type invalid: {d.get('type')}")
+    if d.get("pricing_tier") not in VALID_TIERS:
+        errs.append(f"pricing_tier invalid: {d.get('pricing_tier')}")
+    return errs
+
+
+def enrich_row(row: dict, model: str) -> dict | None:
+    user_msg = f"""Institute info from Google Maps scrape:
+- Name: {row.get('name_th', '')}
+- Address: {row.get('address_th', '')}
+- City: {row.get('city', '')}
+- Phone: {row.get('phone', '')}
+- Website: {row.get('website', '')}
+- Google rating: {row.get('google_rating', 'N/A')} ({row.get('google_review_count', 0)} reviews)
+
+Produce the JSON object per schema. Honest, conservative, Thai content only."""
+
+    response = call_openai({
+        "model": model,
+        "messages": [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_msg},
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0.5,
+    })
+    content = response["choices"][0]["message"]["content"]
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError as e:
+        print(f"  ✗ JSON parse: {e}", file=sys.stderr)
+        return None
+
+
+def merge_full_listing(l1: dict, l3: dict) -> dict:
+    """Combine L1 (from scrape) + L2/L3 (from OpenAI) + L4 (from scrape) + L5 (now)."""
+    target_schools = [s for s in l3.get("target_schools", []) if s in KNOWN_SCHOOL_IDS]
+
+    out = {
+        # L1
+        "name_th": l1.get("name_th", "").strip(),
+        "address_th": l1.get("address_th", "").strip(),
+        "city": normalize_city(l1.get("city", ""), l1.get("address_th", "")),
+        "type": l3["type"],
+        # L1 optional
+        **({"district": l1.get("district").strip()} if l1.get("district") else {}),
+        **({"lat": float(l1["lat"])} if l1.get("lat") not in (None, "", "0") else {}),
+        **({"lng": float(l1["lng"])} if l1.get("lng") not in (None, "", "0") else {}),
+        **({"phone": [l1["phone"].strip()]} if l1.get("phone") else {"phone": []}),
+        **({"website": l1.get("website")} if l1.get("website") else {}),
+        **({"facebook_url": l1.get("facebook_url")} if l1.get("facebook_url") else {}),
+        # L2 / L3
+        "categories": l3["categories"],
+        "subjects": l3["subjects"],
+        "target_schools": target_schools,
+        "featured": False,
+        "claimed": False,
+        "date_listed": date.today().isoformat(),
+        "description_th": l3["description_th"],
+        "speakable_th": l3["speakable_th"],
+        "faq": l3["faq"],
+        "quick_facts": l3["quick_facts"],
+        "pricing_tier": l3["pricing_tier"],
+        "specialties": l3.get("specialties", []),
+        "methodology_th": l3.get("methodology_th", ""),
+        # L4
+        **({"google_rating": float(l1["google_rating"])} if l1.get("google_rating") not in (None, "", "0") else {}),
+        **({"google_review_count": int(l1["google_review_count"])} if l1.get("google_review_count") not in (None, "", "0") else {}),
+        # L4b multi-source (just google for now; FB merged later by tools/import_csv.py if needed)
+        **({"multi_source_ratings": {
+            "google": {
+                "rating": float(l1["google_rating"]),
+                "count": int(l1.get("google_review_count") or 0),
+            },
+        }} if l1.get("google_rating") not in (None, "", "0") else {}),
+        # L5
+        "data_freshness_date": date.today().isoformat(),
+        "sources": ["apify_google_maps", "openai_enrichment"],
+    }
+    return out
+
+
+def write_md(d: dict, out_dir: Path, slug: str) -> Path:
+    out_path = out_dir / f"{slug}.md"
+    with out_path.open("w", encoding="utf-8") as f:
+        f.write("---\n")
+        f.write(yaml.dump(d, allow_unicode=True, sort_keys=False, default_flow_style=False))
+        f.write("---\n")
+    return out_path
 
 
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True)
     parser.add_argument("--out", default="src/content/listings/")
-    parser.add_argument("--dry-run", action="store_true", help="Show what would be sent to OpenAI; don't call API")
+    parser.add_argument("--model", default="gpt-4o", help="gpt-4o (best Thai) or gpt-4o-mini (cheap)")
+    parser.add_argument("--limit", type=int, default=0, help="Process at most N rows (0 = all)")
+    parser.add_argument("--skip-existing", action="store_true", help="Skip slugs already in --out")
     args = parser.parse_args()
 
-    if not os.environ.get("OPENAI_API_KEY") and not args.dry_run:
-        print("✗ OPENAI_API_KEY not set. Set the env var or use --dry-run.", file=sys.stderr)
-        print("  Get key at: https://platform.openai.com/api-keys (wallet ≥ $10)", file=sys.stderr)
+    if not os.environ.get("OPENAI_API_KEY"):
+        print("✗ OPENAI_API_KEY not set. Add to .env or export.", file=sys.stderr)
         sys.exit(1)
 
     in_path = Path(args.input)
     if not in_path.exists():
-        print(f"✗ Input file not found: {in_path}", file=sys.stderr)
+        print(f"✗ Input not found: {in_path}", file=sys.stderr)
         sys.exit(1)
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
+    failure_path = Path(".tmp/enrich_failures.csv")
+    failure_path.parent.mkdir(parents=True, exist_ok=True)
 
     with in_path.open(encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    if args.limit:
+        rows = rows[: args.limit]
+    print(f"Read {len(rows)} rows from {in_path}")
+    print(f"Model: {args.model}\n")
 
-    print(f"Read {len(rows)} listings from {in_path}")
-    if not rows:
-        print("✗ No rows to enrich.", file=sys.stderr)
-        sys.exit(1)
+    written, skipped, failed = 0, 0, 0
+    failure_rows = []
+    cost_estimate = len(rows) * (0.02 if args.model == "gpt-4o" else 0.001)
+    print(f"Estimated OpenAI cost: ~${cost_estimate:.2f}\n")
 
-    if args.dry_run:
-        print("\nDRY RUN — would call OpenAI for each row with prompt:")
-        print("---")
-        print(SYSTEM_PROMPT)
-        print("---\n")
-        for row in rows[:3]:
-            print("INPUT:", json.dumps(row, ensure_ascii=False))
-        if len(rows) > 3:
-            print(f"... and {len(rows) - 3} more rows")
-        return
+    for i, row in enumerate(rows, 1):
+        name = row.get("name_th", "").strip()
+        if not name:
+            print(f"[{i}/{len(rows)}] skipped (no name)")
+            skipped += 1
+            continue
+        slug = slugify(name, row.get("place_id", ""))
+        out_path = out_dir / f"{slug}.md"
+        if args.skip_existing and out_path.exists():
+            print(f"[{i}/{len(rows)}] skip existing: {slug}")
+            skipped += 1
+            continue
 
-    # Real implementation: call openai.chat.completions.create(...) per row
-    # Then validate output → build YAML frontmatter → write .md file
-    print("⚠  Live enrichment not implemented in stub. Add openai SDK call here.")
-    print(f"   Would write {len(rows)} .md files to {out_dir}")
+        print(f"[{i}/{len(rows)}] enriching: {name[:50]}...")
+        try:
+            l3 = enrich_row(row, args.model)
+        except Exception as e:
+            print(f"  ✗ OpenAI error: {e}")
+            failed += 1
+            failure_rows.append({**row, "error": str(e)[:200]})
+            continue
 
+        if l3 is None:
+            failed += 1
+            failure_rows.append({**row, "error": "JSON parse"})
+            continue
 
-def slugify_th(name: str) -> str:
-    s = re.sub(r"[^\w-]", "-", name.lower())
-    return re.sub(r"-+", "-", s).strip("-")
+        errs = validate_enriched(l3)
+        if errs:
+            print(f"  ✗ anti-thin gate: {'; '.join(errs)}")
+            failed += 1
+            failure_rows.append({**row, "error": "; ".join(errs)})
+            continue
+
+        full = merge_full_listing(row, l3)
+        write_md(full, out_dir, slug)
+        written += 1
+        print(f"  ✓ {slug}.md")
+
+    if failure_rows:
+        with failure_path.open("w", newline="", encoding="utf-8") as f:
+            w = csv.DictWriter(f, fieldnames=list(failure_rows[0].keys()))
+            w.writeheader()
+            w.writerows(failure_rows)
+        print(f"\n  ⚠  {failed} failures written to {failure_path}")
+
+    print(f"\n✓ Wrote {written}; skipped {skipped}; failed {failed}")
+    print("\nNext:")
+    print("  python3 tools/validate_listings.py")
+    print("  npm run build")
+    print("  git add src/content/listings/ && git commit -m 'Add N enriched listings'")
+    print("  git push")
 
 
 if __name__ == "__main__":
