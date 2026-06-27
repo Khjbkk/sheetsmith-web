@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const categories = await getCollection('categories');
+  return categories.map((c) => ({
+    params: { slug: c.data.id },
+    props: { category: c.data },
+  }));
+}
+
+const { category } = Astro.props;
+
+const allListings = await getCollection('listings');
+const matching = allListings.filter(l => l.data.categories.includes(category.id as any));
+
+const schools = await getCollection('schools');
+const relevantSchools = schools.filter(s => s.data.level === category.id).sort((a, b) => a.data.sort - b.data.sort);
+
+const catFaq = [
+  {
+    question: `${category.name_th} ควรเริ่มเตรียมตัวตั้งแต่ตอนไหน?`,
+    answer: category.id === 'por1'
+      ? 'แนะนำเริ่มเตรียมตั้งแต่อายุ 4 ขวบครึ่ง หรือประมาณ 6-12 เดือนก่อนสอบจริง ระยะแรกเน้นความคุ้นเคยกับรูปแบบข้อสอบและพัฒนาทักษะพื้นฐาน ไม่ต้องเร่งทำข้อสอบยาก'
+      : category.id === 'mor1'
+      ? 'แนะนำเริ่มตั้งแต่ ป.5 เพื่อให้มีเวลา 12-18 เดือนในการปูพื้นฐานและฝึกข้อสอบจริง โดยเฉพาะคณิต-วิทย์ที่เป็นกุญแจสู่การติดโรงเรียนชั้นนำ'
+      : category.id === 'mor4'
+      ? 'แนะนำเริ่มตั้งแต่ ม.2-ม.3 ต้นเทอม เพื่อมีเวลา 12-18 เดือนปูพื้นฐานคณิต-วิทย์ระดับ ม.ปลายและฝึกข้อสอบเข้าเก่าหลายปี การเริ่มเร็วช่วยให้ไม่ต้องอัดติวช่วงท้าย'
+      : 'แนะนำเริ่มตั้งแต่ ม.5 หรือต้น ม.6 สำหรับการสอบ TGAT/TPAT/A-Level ขึ้นอยู่กับว่าสายอาชีพที่เลือกต้องการสอบชุดไหน',
+  },
+  {
+    question: `เลือกสถาบันสำหรับ ${category.short_th} อย่างไรให้เหมาะกับลูก?`,
+    answer: 'ปัจจัยสำคัญที่ควรพิจารณา ได้แก่ (1) ระดับชั้นที่สถาบันเชี่ยวชาญ (2) แนวข้อสอบที่ครูคุ้นเคย (3) ขนาดห้องเรียน (เล็ก = ดูแลใกล้ชิด, ใหญ่ = ราคาประหยัด) (4) สถานที่และระยะเวลาเดินทาง (5) ค่าใช้จ่ายเทียบกับงบประมาณครอบครัว (6) ทดลองเรียนฟรีก่อนตัดสินใจ',
+  },
+  {
+    question: `เรียนติวออนไลน์ได้ผลเทียบกับ in-person ไหม?`,
+    answer: category.id === 'por1'
+      ? 'สำหรับ ป.1 in-person ดีกว่ามาก เพราะเด็กเล็กต้องการ physical interaction ครูสังเกตพฤติกรรมและความพร้อมโดยตรง การเรียนออนไลน์เด็กอาจไม่จดจ่อ'
+      : 'สำหรับเด็กที่นั่งสมาธิหน้าจอได้แล้ว ออนไลน์ได้ผลเทียบเท่า in-person ในแง่เนื้อหา และประหยัดเวลาเดินทาง แต่ผู้ปกครองต้องคอยกระตุ้นเรื่องวินัย',
+  },
+  {
+    question: `งบประมาณเฉลี่ยสำหรับ ${category.short_th} ที่ครอบครัวควรเตรียม?`,
+    answer: 'ขึ้นกับสถาบันและความเข้มข้น โดยทั่วไป งบประหยัด 600-2,000 บาท/เดือน (กลุ่มใหญ่ ออนไลน์) งบกลาง 2,500-5,000 บาท/เดือน (กลุ่ม 10-15 คน) งบพรีเมียม 5,000-15,000 บาท/เดือน (ห้องเล็ก/ติวเตอร์ส่วนตัว) ระยะเวลาเฉลี่ย 6-18 เดือน',
+  },
+  {
+    question: 'ติดฝันแนะนำสถาบันยังไง?',
+    answer: 'ติดฝันไม่แนะนำสถาบันแบบเจาะจง เราเป็น directory ที่รวบรวมข้อมูลให้ผู้ปกครองเปรียบเทียบได้เอง ติดฝันแสดงข้อมูลพื้นฐาน รีวิว และเงื่อนไขของแต่ละสถาบัน ผู้ใช้ตัดสินใจตามความเหมาะสมกับลูกของตัวเอง',
+  },
+];
+---
+
+<BaseLayout
+  title={`${category.name_th} — รวมสถาบันกวดวิชาและติวเตอร์ | ติดฝัน`}
+  description={category.description_th.slice(0, 155)}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: category.name_th }]} />
+
+    <header class="mb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-4xl">{category.icon}</span>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">{category.name_th}</h1>
+      </div>
+      <p class="text-gray-700 leading-relaxed">{category.intro_th}</p>
+    </header>
+
+    {relevantSchools.length > 0 && (
+      <section class="mb-10">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">เตรียมสอบเข้าโรงเรียนเป้าหมาย</h2>
+        <p class="text-gray-600 mb-6">เลือกโรงเรียนเฉพาะเพื่อดูสถาบันที่เชี่ยวชาญแนวข้อสอบนั้น</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {relevantSchools.map((s) => (
+            <a href={`/for-school/${s.data.id}/`} class="block bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md hover:border-indigo-300 transition-all group">
+              <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{s.data.name_th}</h3>
+              <p class="text-xs text-gray-500 mt-0.5">{s.data.full_name_th}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">รวมสถาบัน{category.name_th}</h2>
+      <p class="text-gray-600 mb-6">มีทั้งหมด {matching.length} สถาบัน — เรียงตามอัปเดตล่าสุด</p>
+      {matching.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {matching.map((l) => (
+            <ListingCard
+              slug={l.id}
+              name_th={l.data.name_th}
+              city={l.data.city}
+              district={l.data.district}
+              categories={l.data.categories}
+              subjects={l.data.subjects}
+              pricing_tier={l.data.pricing_tier}
+              format={l.data.quick_facts.format}
+              google_rating={l.data.google_rating}
+              google_review_count={l.data.google_review_count}
+              description_excerpt={l.data.description_th.slice(0, 120) + '...'}
+              featured={l.data.featured}
+              claimed={l.data.claimed}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+          <p class="text-gray-600">กำลังรวบรวมสถาบันใน{category.name_th} เร็วๆ นี้</p>
+          <p class="text-sm text-gray-500 mt-2">ถ้าคุณรู้จักสถาบันที่ดี <a href="/contact/" class="text-indigo-600 hover:underline">ส่งมาให้เราเพิ่มได้</a></p>
+        </div>
+      )}
+    </section>
+
+    <FAQSection items={catFaq} title={`คำถามที่พบบ่อยเกี่ยวกับ${category.name_th}`} />
+  </div>
+</BaseLayout>

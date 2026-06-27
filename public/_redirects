@@ -1,0 +1,38 @@
+# Cloudflare Pages _redirects — old SheetSmith URLs → ติดฝัน equivalents
+# Preserves SEO equity from previous PDF exam-prep site during pivot to directory model
+
+# Old exam category pages → new directory categories
+/exams                        /category/por1/                301
+/exams/                       /category/por1/                301
+/exams/por1                   /category/por1/                301
+/exams/por1/                  /category/por1/                301
+/exams/mor1                   /category/mor1/                301
+/exams/mor1/                  /category/mor1/                301
+/exams/mor4                   /category/mor4/                301
+/exams/mor4/                  /category/mor4/                301
+
+# Old school-specific pages → new for-school directory pages
+/exams/por1/satit-chula       /for-school/satit-chula-por1/  301
+/exams/por1/satit-chula/      /for-school/satit-chula-por1/  301
+/exams/por1/satit-kaset       /for-school/satit-kaset-por1/  301
+/exams/por1/satit-kaset/      /for-school/satit-kaset-por1/  301
+/exams/mor1/suankularb        /for-school/suankularb-mor1/   301
+/exams/mor1/suankularb/       /for-school/suankularb-mor1/   301
+/exams/mor1/satit-patumwan    /for-school/satit-patumwan-mor1/ 301
+/exams/mor1/satit-patumwan/   /for-school/satit-patumwan-mor1/ 301
+/exams/mor4/triam-udom        /for-school/triam-udom-mor4/   301
+/exams/mor4/triam-udom/       /for-school/triam-udom-mor4/   301
+/exams/mor4/mwit              /for-school/mwit-mor4/         301
+/exams/mor4/mwit/             /for-school/mwit-mor4/         301
+
+# Old sample-exam pages and old blog/guides — content no longer offered.
+# Redirect to the closest relevant category page instead of returning 404.
+/exams/por1/*                 /category/por1/                301
+/exams/mor1/*                 /category/mor1/                301
+/exams/mor4/*                 /category/mor4/                301
+/blog                         /                              301
+/blog/                        /                              301
+/blog/*                       /                              301
+/guides                       /                              301
+/guides/                      /                              301
+/guides/*                     /                              301

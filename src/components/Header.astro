@@ -1,90 +1,34 @@
 ---
-const navItems = [
-  { label: 'หน้าแรก', href: '/' },
-  { label: 'สอบเข้า ป.1', href: '/exams/por1/' },
-  { label: 'สอบเข้า ม.1', href: '/exams/mor1/' },
-  { label: 'สอบเข้า ม.4', href: '/exams/mor4/' },
-  { label: 'บทความ', href: '/blog/' },
-  { label: 'เกี่ยวกับเรา', href: '/about/' },
-];
-
-const currentPath = Astro.url.pathname;
+const pathname = Astro.url.pathname;
+const isActive = (path: string) => pathname === path || pathname.startsWith(path + '/');
 ---
 
-<header class="bg-white/95 backdrop-blur-md border-b border-border sticky top-0 z-50 transition-shadow duration-300" id="site-header">
-  <div class="max-w-6xl mx-auto px-4 sm:px-6">
-    <div class="flex items-center justify-between h-[68px]">
-      <!-- Logo -->
-      <a href="/" class="flex items-center gap-2.5 group">
-        <img src="/logo.png" alt="SheetSmith" width="42" height="42" class="rounded-lg shadow-sm group-hover:shadow transition-shadow duration-200" />
-        <div class="flex flex-col leading-tight">
-          <span class="font-heading text-lg font-bold text-primary tracking-tight">SheetSmith</span>
-          <span class="text-[10px] text-text-muted font-medium tracking-wide">ชีทติวสอบ ประถม-มัธยม</span>
-        </div>
-      </a>
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <a href="/" class="flex items-center gap-2.5 shrink-0">
+      <div class="w-9 h-9 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">ติ</div>
+      <span class="font-bold text-xl text-gray-900 font-heading">ติดฝัน</span>
+      <span class="hidden sm:inline text-xs text-gray-500">Tutor Directory</span>
+    </a>
 
-      <!-- Desktop Nav -->
-      <nav class="hidden md:flex items-center gap-0.5">
-        {navItems.map((item) => (
-          <a
-            href={item.href}
-            class:list={[
-              'px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200',
-              currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-                ? 'bg-primary text-white shadow-sm'
-                : 'text-text-light hover:text-primary hover:bg-primary-light',
-            ]}
-          >
-            {item.label}
-          </a>
-        ))}
-      </nav>
-
-      <!-- Mobile menu button -->
-      <button
-        id="mobile-menu-btn"
-        class="md:hidden p-2 rounded-lg text-text-light hover:bg-bg-warm active:scale-95 transition-all"
-        aria-label="เปิดเมนู"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
+    <form action="/search" method="get" class="hidden md:flex flex-1 max-w-md relative">
+      <input
+        type="search"
+        name="q"
+        placeholder="ค้นหาติวเตอร์ สถาบัน วิชา โรงเรียน..."
+        class="w-full rounded-full border border-gray-300 px-4 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+      />
+      <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </button>
-    </div>
+    </form>
 
-    <!-- Mobile Nav -->
-    <nav id="mobile-menu" class="hidden md:hidden pb-4 border-t border-border pt-3">
-      {navItems.map((item) => (
-        <a
-          href={item.href}
-          class:list={[
-            'block px-4 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
-            currentPath === item.href || (item.href !== '/' && currentPath.startsWith(item.href))
-              ? 'bg-primary text-white'
-              : 'text-text-light hover:text-primary hover:bg-primary-light',
-          ]}
-        >
-          {item.label}
-        </a>
-      ))}
+    <nav class="flex items-center gap-1 text-sm">
+      <a href="/category/por1/" class={`px-3 py-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${isActive('/category/por1') ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}>ป.1</a>
+      <a href="/category/mor1/" class={`px-3 py-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${isActive('/category/mor1') ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}>ม.1</a>
+      <a href="/category/mor4/" class={`px-3 py-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${isActive('/category/mor4') ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}>ม.4</a>
+      <a href="/category/uni/" class={`px-3 py-2 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-colors ${isActive('/category/uni') ? 'text-indigo-600 font-medium' : 'text-gray-700'}`}>มหาวิทยาลัย</a>
+      <a href="/tool/find-my-tutor/" class="ml-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium text-sm hidden sm:inline-block">หาติวเตอร์ที่ใช่</a>
     </nav>
   </div>
 </header>
-
-<script>
-  const btn = document.getElementById('mobile-menu-btn');
-  const menu = document.getElementById('mobile-menu');
-  btn?.addEventListener('click', () => {
-    menu?.classList.toggle('hidden');
-  });
-
-  // Add shadow on scroll
-  const header = document.getElementById('site-header');
-  window.addEventListener('scroll', () => {
-    if (window.scrollY > 10) {
-      header?.classList.add('shadow-md');
-    } else {
-      header?.classList.remove('shadow-md');
-    }
-  });
-</script>

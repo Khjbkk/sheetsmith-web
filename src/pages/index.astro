@@ -1,264 +1,201 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import ListingCard from '../components/ListingCard.astro';
 import FAQSection from '../components/FAQSection.astro';
 import { getCollection } from 'astro:content';
 
-const allBlogPosts = await getCollection('blog', ({ data }) => !data.draft && data.publishDate <= new Date());
-const latestPosts = allBlogPosts
-  .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
-  .slice(0, 3);
+const listings = await getCollection('listings');
+const categories = await getCollection('categories');
+const schools = await getCollection('schools');
+const cities = await getCollection('cities');
 
-const levelCards = [
-  {
-    level: 'ป.1',
-    href: '/exams/por1/',
-    accent: 'por1',
-    emoji: '🌱',
-    description: 'ข้อสอบเข้าสาธิตจุฬา สาธิตเกษตร และโรงเรียนชั้นนำ',
-    subjects: ['เชาว์ปัญญา', 'ภาษาไทย', 'คณิตศาสตร์', 'ภาษาอังกฤษ'],
-  },
-  {
-    level: 'ม.1',
-    href: '/exams/mor1/',
-    accent: 'mor1',
-    emoji: '📘',
-    description: 'ข้อสอบเข้า ร.ร.ชั้นนำ สาธิตปทุมวัน สวนกุหลาบ เตรียมอุดมพัฒนาการ',
-    subjects: ['คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ', 'ภาษาไทย', 'สังคม'],
-  },
-  {
-    level: 'ม.4',
-    href: '/exams/mor4/',
-    accent: 'mor4',
-    emoji: '🎓',
-    description: 'ข้อสอบเข้าเตรียมอุดม มหิดลวิทยานุสรณ์ สาธิตจุฬา',
-    subjects: ['คณิตศาสตร์', 'วิทยาศาสตร์', 'ภาษาอังกฤษ', 'ภาษาไทย-สังคม'],
-  },
-];
+const featured = listings.filter(l => l.data.featured).slice(0, 6);
+const recent = listings.slice(0, 8);
 
-const uspItems = [
-  {
-    icon: '📝',
-    title: 'ข้อสอบจากสนามจริง',
-    desc: 'รวบรวมแนวข้อสอบจากสนามสอบจริง ไม่ใช่ข้อสอบที่แต่งขึ้นเอง',
-  },
-  {
-    icon: '✅',
-    title: 'เฉลยละเอียดทุกข้อ',
-    desc: 'ทุกข้อมีเฉลยพร้อมวิธีคิดแบบ step-by-step เข้าใจง่าย',
-  },
-  {
-    icon: '🔄',
-    title: 'อัปเดตตามหลักสูตรล่าสุด',
-    desc: 'ข้อสอบอัปเดตตามหลักสูตรและแนวข้อสอบล่าสุดทุกปี',
-  },
-  {
-    icon: '🔁',
-    title: 'ออกแบบให้ฝึกซ้ำได้',
-    desc: 'จัดเรียงข้อสอบเป็นชุด ฝึกทำซ้ำหลายรอบเพื่อความชำนาญ',
-  },
-];
+const sortedCategories = categories.sort((a, b) => a.data.sort - b.data.sort);
+const topSchools = schools.sort((a, b) => a.data.sort - b.data.sort);
+const topCities = cities.filter(c => c.data.id !== 'online').sort((a, b) => a.data.sort - b.data.sort).slice(0, 6);
 
-const faqItems = [
+const homeFaq = [
   {
-    question: 'SheetSmith ต่างจากข้อสอบตามท้องตลาดอย่างไร?',
-    answer: 'SheetSmith ต่างจากข้อสอบทั่วไปใน 3 ประเด็นหลัก ประเด็นแรกคือแหล่งที่มา — เรารวบรวมแนวข้อสอบจากสนามสอบจริงของโรงเรียนสาธิตและโรงเรียนชั้นนำ ไม่ใช่ข้อสอบที่แต่งขึ้นเองโดยไม่อ้างอิงสนามจริง ประเด็นที่สองคือเฉลยแบบติวเตอร์ — ทุกข้ออธิบายวิธีคิดแบบ step-by-step เช่น เริ่มจากการอ่านโจทย์ว่าถามอะไร แล้วใช้สูตรอะไรเพราะอะไร ไม่ใช่แค่ระบุคำตอบสุดท้าย ทำให้นักเรียนนำหลักการไปใช้กับข้อสอบลักษณะเดียวกันได้ ประเด็นที่สามคืออัปเดตตามหลักสูตรปัจจุบัน — เราติดตามการเปลี่ยนแปลงของแนวข้อสอบทุกปี ปรับปรุงเนื้อหาให้สอดคล้องกับสิ่งที่โรงเรียนออกล่าสุด เพื่อให้นักเรียนเตรียมตัวกับสิ่งที่จะเจอจริง ไม่ใช่ข้อสอบจากหลายปีก่อนที่อาจล้าสมัย',
+    question: 'ติดฝัน คือเว็บไซต์อะไร?',
+    answer: 'ติดฝัน (TidFun) คือ directory แห่งสถาบันกวดวิชาและติวเตอร์ทั่วประเทศไทยที่เตรียมเด็กสอบเข้าโรงเรียนสาธิต โรงเรียนชั้นนำ และมหาวิทยาลัย ผู้ปกครองสามารถค้นหาเปรียบเทียบและติดต่อสถาบันที่เหมาะกับลูกได้ในที่เดียว ดำเนินงานโดยบริษัท ซิโอร่า จำกัด',
   },
   {
-    question: 'ลูกอายุเท่าไหร่ควรเริ่มฝึกทำข้อสอบ?',
-    answer: 'ช่วงเวลาที่เหมาะสมขึ้นอยู่กับระดับที่ลูกจะสอบ สำหรับสอบเข้า ป.1 ของโรงเรียนสาธิต แนะนำเริ่มฝึกตั้งแต่อายุ 5-6 ขวบ หรือประมาณ 6-12 เดือนก่อนวันสอบจริง ระยะแรกเน้นความคุ้นเคยกับรูปแบบข้อสอบ (เชาว์ปัญญา ภาษาไทย คณิตเบื้องต้น) ไม่ต้องเร่งความเร็ว สำหรับสอบเข้า ม.1 ควรเริ่มตั้งแต่ ป.5 เพราะมีเวลาทบทวนเนื้อหา ป.4-ป.6 ทุกวิชา รวมทั้งฝึกข้อสอบเสริมที่ยากกว่าระดับชั้น สำหรับสอบเข้า ม.4 โดยเฉพาะเตรียมอุดมและ MWIT ควรเริ่มตั้งแต่ ม.2-ม.3 เพื่อให้มีเวลาฝึกข้อสอบหลายชุดและทบทวนจุดอ่อน หลักการคือ ยิ่งเริ่มเร็ว ยิ่งมีเวลาวินิจฉัยปัญหาและแก้ไขก่อนสอบจริง ไม่ใช่อัดติวช่วงท้ายอย่างเดียว',
+    question: 'การใช้งานติดฝัน เสียค่าใช้จ่ายไหม?',
+    answer: 'สำหรับผู้ปกครองและนักเรียน การค้นหาและดูข้อมูลสถาบันทั้งหมดบนติดฝัน ฟรี ไม่มีค่าใช้จ่าย เราไม่เก็บค่าใช้บริการจากผู้ค้นหา การติดต่อสถาบันโดยตรงผ่านช่องทางที่แต่ละสถาบันแสดงไว้ ไม่ผ่านค่ากลางของติดฝัน',
   },
   {
-    question: 'ข้อสอบเข้า ป.1 สาธิตจุฬา ยากไหม?',
-    answer: 'ข้อสอบเข้าสาธิตจุฬาระดับ ป.1 ไม่ได้ยากในแง่เนื้อหาวิชาการ แต่ยากที่รูปแบบและความคุ้นเคย ข้อสอบเน้นทดสอบความพร้อม เชาว์ปัญญา การจัดประเภท การเปรียบเทียบ และความเข้าใจภาษา ซึ่งเป็นทักษะที่เด็กในวัยนี้ยังพัฒนาไม่เต็มที่ มีทั้งข้อง่ายที่เด็กส่วนใหญ่ทำได้ และข้อยากที่ต้องคิดเป็นขั้นตอน ระดับการแข่งขันอยู่ในกลุ่มที่สูงที่สุดของประเทศ เพราะอัตรารับเข้าน้อยเทียบกับจำนวนผู้สมัคร แต่การฝึกทำข้อสอบตัวอย่างซ้ำๆ ช่วยลดความตื่นเต้นในวันสอบจริงและทำให้เด็กรู้ว่าต้องคิดอย่างไรกับโจทย์แต่ละประเภท เด็กที่เคยเห็นข้อสอบลักษณะเดียวกันมาก่อนจะทำได้รวดเร็วและมั่นใจกว่าเด็กที่เจอเป็นครั้งแรก',
+    question: 'จะรู้ได้อย่างไรว่าข้อมูลในติดฝัน เชื่อถือได้?',
+    answer: 'ติดฝันรวบรวมข้อมูลจากหลายแหล่ง ทั้งการ scrape Google Maps การติดต่อสถาบันโดยตรง และข้อมูลที่สถาบันส่งให้เราเอง สถาบันที่มีเครื่องหมาย Claimed คือสถาบันที่ยืนยันข้อมูลกับเราโดยตรง ส่วนสถาบันที่ยังไม่ได้เคลม ข้อมูลอาจมาจากแหล่งสาธารณะและขอแนะนำให้ผู้ใช้ตรวจสอบกับสถาบันอีกครั้ง',
   },
   {
-    question: 'มีเฉลยละเอียดไหม?',
-    answer: 'ทุกชุดข้อสอบของ SheetSmith มาพร้อมเฉลยละเอียดแบบติวเตอร์ทุกข้อ ไม่ใช่แค่ระบุคำตอบ A/B/C/D หรือเลขผลลัพธ์ แต่อธิบาย 3 ส่วนหลัก ส่วนแรกคือวิธีอ่านโจทย์ — โจทย์ถามอะไร และคำสำคัญที่ต้องจับ ส่วนที่สองคือวิธีคิด — เลือกใช้หลักการหรือสูตรไหน เพราะอะไร และคำนวณทีละขั้น ส่วนที่สามคือเทคนิคหลีกเลี่ยงข้อผิดพลาด — ข้อนี้คนพลาดเพราะอะไร เพื่อให้นักเรียนเรียนรู้จากเฉลย ไม่ใช่แค่ตรวจคำตอบ รูปแบบนี้เหมาะสำหรับทั้งนักเรียนที่ทบทวนด้วยตัวเอง เพราะเห็นวิธีคิดทำให้แก้โจทย์ใหม่ที่คล้ายกันได้ และผู้ปกครองที่อยากช่วยสอนลูกแต่ไม่แน่ใจวิธีอธิบาย เฉลยเขียนแบบที่ผู้ปกครองนำไปอ่านให้ลูกฟังได้เลย',
+    question: 'ฉันเป็นเจ้าของสถาบัน อยากเพิ่มของฉันต้องทำอย่างไร?',
+    answer: 'เจ้าของสถาบันกวดวิชาและติวเตอร์อิสระสามารถเพิ่มสถาบันของตนเข้าสู่ติดฝัน ฟรี ผ่านฟอร์มเคลมที่ลิงก์ "เพิ่มสถาบันของคุณ ฟรี" หรือติดต่อทางอีเมล info@tidfun.com เราจะตรวจสอบและเปิดให้แสดงผลบนเว็บไซต์ภายใน 2-3 วันทำการ',
   },
   {
-    question: 'สั่งซื้อยังไง ได้รับเมื่อไหร่?',
-    answer: 'การสั่งซื้อ SheetSmith ใช้ขั้นตอนสั้นๆ ผ่านช่องทาง LINE @sheetsmith หรือ Facebook Page: SheetSmith ขั้นที่หนึ่ง ทักทายและแจ้งระดับ (ป.1, ม.1 หรือ ม.4) พร้อมโรงเรียนหรือวิชาที่สนใจ ขั้นที่สอง ทีมงานจะแนะนำชุดที่ตรงกับเป้าหมายและส่งรายละเอียดราคาให้พิจารณา ขั้นที่สาม ชำระเงินโดยโอนผ่านบัญชีธนาคารที่แจ้ง ขั้นที่สี่ เราส่งลิงก์ดาวน์โหลดไฟล์ PDF ให้ภายในไม่กี่นาทีหลังยืนยันการชำระเงิน ไม่มีการจัดส่งทางกายภาพ ไม่ต้องรอหลายวัน เปิดดูได้ทั้งบนคอมพิวเตอร์ แท็บเล็ต และมือถือ พิมพ์ออกมาทำเป็นกระดาษได้ ทีมงานยินดีตอบคำถามเกี่ยวกับเฉลยหรือเนื้อหาแม้สั่งซื้อไปแล้ว เพราะเราไม่ทิ้งลูกค้าหลังขาย',
+    question: 'อยากแนะนำสถาบันที่ดีให้ติดฝัน เพิ่มได้ไหม?',
+    answer: 'ได้ ติดฝันยินดีรับคำแนะนำสถาบันจากผู้ใช้ทุกท่าน ส่งชื่อสถาบัน เว็บไซต์ หรือลิงก์ Facebook มาที่ info@tidfun.com ทีมงานจะตรวจสอบและเพิ่มเข้า directory ถ้าผ่านเกณฑ์คุณภาพของเรา',
   },
 ];
 ---
 
 <BaseLayout
-  title="หน้าแรก"
-  description="SheetSmith ชีทติวสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียด รวมแนวข้อสอบจริงอัปเดตล่าสุด ดาวน์โหลด PDF ได้ทันที"
+  title="ติดฝัน — Directory ติวเตอร์-สถาบันกวดวิชา หาที่ติวที่ใช่ใน 3 นาที"
+  description="ติดฝัน รวมสถาบันกวดวิชาและติวเตอร์ทั่วประเทศไทย เตรียมสอบเข้า ป.1 ม.1 ม.4 มหาวิทยาลัย ค้นหาตามโรงเรียน วิชา พื้นที่ ราคา หาที่ติวที่ใช่กับลูกของคุณ"
 >
-  <!-- Hero Section -->
-  <section class="relative overflow-hidden bg-primary py-20 md:py-28">
-    <!-- Decorative elements -->
-    <div class="absolute inset-0 opacity-10">
-      <div class="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-secondary"></div>
-      <div class="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-accent"></div>
+  <!-- Hero -->
+  <section class="relative bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-800 text-white py-20 md:py-28 overflow-hidden">
+    <div class="absolute inset-0 opacity-20">
+      <div class="absolute -top-20 -right-20 w-96 h-96 rounded-full bg-purple-400"></div>
+      <div class="absolute -bottom-32 -left-16 w-80 h-80 rounded-full bg-indigo-400"></div>
     </div>
 
-    <div class="relative max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="flex flex-col md:flex-row items-center gap-10">
-        <div class="flex-1 text-center md:text-left">
-          <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-4 animate-fade-up">ชีทติวสอบ ประถม-มัธยม</p>
-          <h1 class="font-heading text-3xl md:text-5xl font-extrabold text-white mb-5 leading-[1.2] animate-fade-up stagger-1">
-            เตรียมสอบเข้า<br />
-            <span class="text-secondary">ป.1 ม.1 ม.4</span><br />
-            ด้วยข้อสอบจากสนามจริง
-          </h1>
-          <p class="text-lg text-white/75 max-w-xl mb-8 animate-fade-up stagger-2">
-            รวมแนวข้อสอบจากโรงเรียนสาธิตและโรงเรียนชั้นนำ พร้อมเฉลยละเอียดทุกข้อ ดาวน์โหลด PDF ได้ทันที
-          </p>
-          <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start animate-fade-up stagger-3">
-            <a
-              href="/exams/"
-              class="inline-block bg-secondary text-primary-dark font-bold px-8 py-4 rounded-xl text-lg hover:bg-secondary-dark hover:text-white transition-all shadow-lg"
-            >
-              ดูตัวอย่างข้อสอบฟรี
-            </a>
-            <a
-              href="/about/"
-              class="inline-block bg-white/10 backdrop-blur text-white font-semibold px-8 py-4 rounded-xl text-lg hover:bg-white/20 transition-all border border-white/20"
-            >
-              เกี่ยวกับเรา
-            </a>
-          </div>
-        </div>
-        <div class="flex-shrink-0 animate-scale-in stagger-2">
-          <img src="/logo.png" alt="SheetSmith Logo" width="200" height="200" class="rounded-2xl shadow-2xl" />
-        </div>
-      </div>
-    </div>
-  </section>
+    <div class="relative max-w-4xl mx-auto px-4 sm:px-6 text-center">
+      <p class="text-purple-200 font-semibold text-sm tracking-widest uppercase mb-4">Directory ติวเตอร์ที่ใหญ่ที่สุดในไทย</p>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
+        หาที่ติวที่ใช่<br />
+        <span class="text-amber-300">ให้ลูกติดโรงเรียนในฝัน</span>
+      </h1>
+      <p class="text-lg md:text-xl text-white/85 max-w-2xl mx-auto mb-8">
+        รวมสถาบันกวดวิชาและติวเตอร์ทั่วประเทศ เตรียมสอบเข้า ป.1 ม.1 ม.4 มหาวิทยาลัย ค้นหาตามโรงเรียน วิชา พื้นที่ ราคา
+      </p>
 
-  <!-- Trust Stats Bar -->
-  <section class="bg-white border-b border-border">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        <div>
-          <div class="font-heading text-3xl font-extrabold text-primary">500+</div>
-          <div class="text-sm text-text-muted mt-1">ข้อสอบตัวอย่าง</div>
-        </div>
-        <div>
-          <div class="font-heading text-3xl font-extrabold text-accent">3</div>
-          <div class="text-sm text-text-muted mt-1">ระดับชั้น</div>
-        </div>
-        <div>
-          <div class="font-heading text-3xl font-extrabold text-secondary">10+</div>
-          <div class="text-sm text-text-muted mt-1">วิชาที่ครอบคลุม</div>
-        </div>
-        <div>
-          <div class="font-heading text-3xl font-extrabold text-por1">100%</div>
-          <div class="text-sm text-text-muted mt-1">เฉลยละเอียด</div>
-        </div>
-      </div>
-    </div>
-  </section>
+      <form action="/search" method="get" class="max-w-2xl mx-auto bg-white rounded-2xl p-2 flex flex-col sm:flex-row gap-2 shadow-2xl">
+        <input
+          type="search"
+          name="q"
+          placeholder="เช่น ติวเตอร์คณิต ม.1 กรุงเทพ หรือ สาธิตจุฬา ป.1"
+          class="flex-1 px-4 py-3 text-gray-900 rounded-xl focus:outline-none"
+        />
+        <button type="submit" class="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl transition-colors">
+          ค้นหา
+        </button>
+      </form>
 
-  <!-- Level Cards Section -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-    <div class="text-center mb-12">
-      <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-2">เลือกระดับชั้น</p>
-      <h2 class="font-heading text-2xl md:text-4xl font-bold text-text">
-        เตรียมพร้อมสำหรับทุกสนามสอบ
-      </h2>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-      {levelCards.map((card, i) => (
-        <a href={card.href} class={`group block animate-fade-up stagger-${i + 1}`}>
-          <div class={`rounded-2xl border-2 border-${card.accent}/30 bg-${card.accent}-light/30 p-7 hover:shadow-xl hover:border-${card.accent} hover:-translate-y-1 transition-all duration-300`}>
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-3xl">{card.emoji}</span>
-              <div class={`px-3 py-1 rounded-full bg-${card.accent} text-white font-bold text-sm`}>
-                {card.level}
-              </div>
-            </div>
-            <h3 class="font-heading text-xl font-bold text-text mb-2 group-hover:text-primary transition-colors">
-              สอบเข้า {card.level}
-            </h3>
-            <p class="text-sm text-text-light mb-5 leading-relaxed">{card.description}</p>
-            <div class="flex flex-wrap gap-2">
-              {card.subjects.map((subject) => (
-                <span class="px-2.5 py-1 bg-white/80 text-text-light text-xs rounded-full border border-border">{subject}</span>
-              ))}
-            </div>
-          </div>
+      <div class="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+        <a href="/tool/find-my-tutor/" class="inline-flex items-center gap-2 bg-amber-400 hover:bg-amber-500 text-amber-900 font-semibold px-5 py-2.5 rounded-full transition-colors">
+          🎯 หาติวเตอร์ที่ใช่ใน 3 นาที (ฟรี)
         </a>
-      ))}
+      </div>
     </div>
   </section>
 
-  <!-- USP Section -->
-  <section class="bg-bg-warm py-20">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6">
-      <div class="text-center mb-12">
-        <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-2">จุดเด่น</p>
-        <h2 class="font-heading text-2xl md:text-4xl font-bold text-text">
-          ทำไมต้อง SheetSmith?
-        </h2>
-      </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {uspItems.map((item, i) => (
-          <div class={`bg-white rounded-2xl p-7 border border-border hover:shadow-lg hover:-translate-y-1 transition-all duration-300 animate-fade-up stagger-${i + 1}`}>
-            <div class="text-3xl mb-4">{item.icon}</div>
-            <h3 class="font-heading font-bold text-text mb-2">{item.title}</h3>
-            <p class="text-sm text-text-light leading-relaxed">{item.desc}</p>
-          </div>
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+    <!-- Categories -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">ค้นหาตามระดับชั้น</h2>
+      <p class="text-gray-600 mb-6">เลือกระดับที่ลูกจะสอบเข้าเพื่อดูสถาบันที่เชี่ยวชาญเฉพาะระดับนั้น</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {sortedCategories.map((c) => (
+          <a href={`/category/${c.data.id}/`} class="block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-md hover:border-indigo-300 transition-all group">
+            <div class="text-4xl mb-3">{c.data.icon}</div>
+            <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{c.data.name_th}</h3>
+            <p class="text-xs text-gray-500 mt-1">{c.data.short_th}</p>
+          </a>
         ))}
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Latest Blog Posts -->
-  {latestPosts.length > 0 && (
-    <section class="max-w-6xl mx-auto px-4 sm:px-6 py-20">
-      <div class="flex items-end justify-between mb-10">
-        <div>
-          <p class="text-secondary font-semibold text-sm tracking-widest uppercase mb-2">บทความ</p>
-          <h2 class="font-heading text-2xl md:text-3xl font-bold text-text">บทความล่าสุด</h2>
-        </div>
-        <a href="/blog/" class="text-primary hover:text-primary-dark font-semibold text-sm transition-colors hidden sm:block">
-          ดูทั้งหมด &rarr;
-        </a>
-      </div>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {latestPosts.map((post, i) => (
-          <a href={`/blog/${post.id}/`} class={`group block animate-fade-up stagger-${i + 1}`}>
-            <div class="bg-white border border-border rounded-2xl p-6 hover:shadow-lg hover:border-primary/30 hover:-translate-y-1 transition-all duration-300 h-full">
-              <time class="text-xs text-text-muted font-medium" datetime={post.data.publishDate.toISOString()}>
-                {post.data.publishDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
-              </time>
-              <h3 class="font-heading font-bold text-text group-hover:text-primary transition-colors mt-3 mb-2 text-lg leading-snug">
-                {post.data.title}
-              </h3>
-              <p class="text-sm text-text-light line-clamp-2 leading-relaxed">{post.data.description}</p>
+    <!-- Top Schools (Flagship for-school pages) -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">เตรียมสอบเข้าโรงเรียนเป้าหมาย</h2>
+      <p class="text-gray-600 mb-6">เลือกโรงเรียนที่ลูกอยากเข้าเพื่อดูสถาบันที่เชี่ยวชาญแนวข้อสอบของโรงเรียนนั้น</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {topSchools.map((s) => (
+          <a href={`/for-school/${s.data.id}/`} class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-indigo-300 transition-all group">
+            <div class="flex items-start gap-3">
+              <div class="text-2xl">🏫</div>
+              <div class="flex-1">
+                <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{s.data.name_th}</h3>
+                <p class="text-xs text-gray-500 mt-0.5">{s.data.full_name_th}</p>
+                <p class="text-sm text-gray-600 mt-2 line-clamp-2">{s.data.description_th}</p>
+              </div>
             </div>
           </a>
         ))}
       </div>
-      <div class="text-center mt-8 sm:hidden">
-        <a href="/blog/" class="text-primary font-semibold">ดูบทความทั้งหมด &rarr;</a>
+    </section>
+
+    <!-- Featured listings -->
+    {featured.length > 0 && (
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">⭐ สถาบันแนะนำ</h2>
+        <p class="text-gray-600 mb-6">สถาบันที่ผ่านการตรวจสอบและแนะนำโดยทีมงานติดฝัน</p>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {featured.map((l) => (
+            <ListingCard
+              slug={l.id}
+              name_th={l.data.name_th}
+              city={l.data.city}
+              district={l.data.district}
+              categories={l.data.categories}
+              subjects={l.data.subjects}
+              pricing_tier={l.data.pricing_tier}
+              format={l.data.quick_facts.format}
+              google_rating={l.data.google_rating}
+              google_review_count={l.data.google_review_count}
+              description_excerpt={l.data.description_th.slice(0, 120) + '...'}
+              featured={l.data.featured}
+              claimed={l.data.claimed}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+
+    <!-- All recent listings -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">เพิ่มเข้า directory ล่าสุด</h2>
+      <p class="text-gray-600 mb-6">สถาบันใหม่ที่เพิ่งเพิ่มเข้าฐานข้อมูล อัปเดตเป็นประจำทุกสัปดาห์</p>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {recent.map((l) => (
+          <ListingCard
+            slug={l.id}
+            name_th={l.data.name_th}
+            city={l.data.city}
+            district={l.data.district}
+            categories={l.data.categories}
+            subjects={l.data.subjects}
+            pricing_tier={l.data.pricing_tier}
+            format={l.data.quick_facts.format}
+            google_rating={l.data.google_rating}
+            google_review_count={l.data.google_review_count}
+            description_excerpt={l.data.description_th.slice(0, 120) + '...'}
+            featured={l.data.featured}
+            claimed={l.data.claimed}
+          />
+        ))}
       </div>
     </section>
-  )}
 
-  <!-- FAQ Section -->
-  <div class="max-w-3xl mx-auto px-4 sm:px-6">
-    <FAQSection items={faqItems} />
-  </div>
-
-  <!-- CTA Section -->
-  <section class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
-    <div class="bg-gradient-to-br from-primary to-primary-dark rounded-3xl p-10 md:p-14 text-center text-white relative overflow-hidden">
-      <div class="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-secondary/20"></div>
-      <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-accent/20"></div>
-      <div class="relative">
-        <h2 class="font-heading text-2xl md:text-3xl font-bold mb-3">พร้อมเริ่มฝึกทำข้อสอบแล้วหรือยัง?</h2>
-        <p class="text-white/75 mb-8 max-w-2xl mx-auto">ดาวน์โหลดตัวอย่างข้อสอบฟรี พร้อมเฉลยละเอียดทุกข้อ เริ่มเตรียมตัวได้เลยวันนี้</p>
-        <a
-          href="/exams/"
-          class="inline-block bg-secondary text-primary-dark font-bold px-10 py-4 rounded-xl text-lg hover:bg-secondary-dark hover:text-white transition-all shadow-lg"
-        >
-          ดูตัวอย่างข้อสอบฟรี
+    <!-- Cities -->
+    <section class="mb-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">ค้นหาตามพื้นที่</h2>
+      <p class="text-gray-600 mb-6">ดูสถาบันในจังหวัดที่คุณอยู่</p>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {topCities.map((c) => (
+          <a href={`/city/${c.data.id}/`} class="block bg-white border border-gray-200 rounded-xl p-4 text-center hover:shadow-md hover:border-indigo-300 transition-all group">
+            <p class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">{c.data.name_th}</p>
+            <p class="text-xs text-gray-500">{c.data.region_th}</p>
+          </a>
+        ))}
+        <a href="/city/online/" class="block bg-indigo-50 border border-indigo-200 rounded-xl p-4 text-center hover:shadow-md hover:border-indigo-400 transition-all group">
+          <p class="font-semibold text-indigo-700">🌐 ออนไลน์</p>
+          <p class="text-xs text-indigo-600">ทั่วประเทศ</p>
         </a>
       </div>
-    </div>
-  </section>
+    </section>
+
+    <FAQSection items={homeFaq} />
+
+    <!-- For tutors CTA -->
+    <section class="my-16 bg-gradient-to-r from-amber-400 to-orange-500 rounded-2xl p-8 md:p-12 text-center">
+      <h2 class="text-2xl md:text-3xl font-bold text-amber-900 mb-3">เป็นเจ้าของสถาบันหรือติวเตอร์?</h2>
+      <p class="text-amber-900/85 mb-6 max-w-2xl mx-auto">เพิ่มสถาบันของคุณบนติดฝันฟรี เข้าถึงผู้ปกครองที่กำลังหาที่ติว ทุกระดับชั้นทุกพื้นที่</p>
+      <a href="/claim/" class="inline-block bg-white text-amber-900 font-bold px-8 py-3.5 rounded-xl hover:bg-gray-50 transition-all shadow-lg">
+        เพิ่มสถาบันของคุณ ฟรี &rarr;
+      </a>
+    </section>
+  </div>
 </BaseLayout>

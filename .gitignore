@@ -28,3 +28,10 @@ pnpm-debug.log*
 .dev.vars*
 !.dev.vars.example
 !.env.example
+
+# WAT framework scratch (per CLAUDE.md: "Local files are just for processing")
+.tmp/
+
+# Bigfoot Blueprint reference doc (kept locally, not in repo)
+Bigfoot-Blueprint_Directory-Website_AI-Execution-Playbook.md
+

@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const subjects = await getCollection('subjects');
+  return subjects.map((s) => ({
+    params: { slug: s.data.id },
+    props: { subject: s.data },
+  }));
+}
+
+const { subject } = Astro.props;
+const allListings = await getCollection('listings');
+const matching = allListings.filter(l => l.data.subjects.includes(subject.id as any));
+---
+
+<BaseLayout
+  title={`ติว${subject.name_th} — รวมสถาบันและติวเตอร์ | ติดฝัน`}
+  description={`รวมสถาบันและติวเตอร์ที่สอน ${subject.name_th} ทุกระดับชั้น ตั้งแต่ ป.1 ถึงมหาวิทยาลัย เลือกที่ตรงกับลูก`}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: subject.name_th }]} />
+
+    <header class="mb-10">
+      <div class="flex items-center gap-3 mb-4">
+        <span class="text-4xl">{subject.icon}</span>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">ติว{subject.name_th}</h1>
+      </div>
+      <p class="text-gray-700 leading-relaxed">{subject.description_th}</p>
+    </header>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">สถาบันที่สอน{subject.name_th}</h2>
+      <p class="text-gray-600 mb-6">{matching.length} สถาบัน</p>
+      {matching.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {matching.map((l) => (
+            <ListingCard
+              slug={l.id}
+              name_th={l.data.name_th}
+              city={l.data.city}
+              district={l.data.district}
+              categories={l.data.categories}
+              subjects={l.data.subjects}
+              pricing_tier={l.data.pricing_tier}
+              format={l.data.quick_facts.format}
+              google_rating={l.data.google_rating}
+              google_review_count={l.data.google_review_count}
+              description_excerpt={l.data.description_th.slice(0, 120) + '...'}
+              featured={l.data.featured}
+              claimed={l.data.claimed}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+          <p class="text-gray-600">ยังไม่มีสถาบันที่สอน{subject.name_th} บน directory</p>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>

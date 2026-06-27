@@ -2,6 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /admin/
+Disallow: /search
 
 # AI search crawlers — explicitly allowed
 User-agent: GPTBot
@@ -37,4 +38,4 @@ Allow: /
 User-agent: Amazonbot
 Allow: /
 
-Sitemap: https://sheetsmith.org/sitemap-index.xml
+Sitemap: https://xn--l3cbnp4hpa.com/sitemap-index.xml

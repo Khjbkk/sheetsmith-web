@@ -1,0 +1,142 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import ListingCard from '../components/ListingCard.astro';
+import { getCollection } from 'astro:content';
+
+const allListings = await getCollection('listings');
+// Server-side: render all listings as JSON for client-side filter
+const allListingsData = allListings.map(l => ({
+  slug: l.id,
+  name_th: l.data.name_th,
+  city: l.data.city,
+  district: l.data.district,
+  categories: l.data.categories,
+  subjects: l.data.subjects,
+  target_schools: l.data.target_schools,
+  pricing_tier: l.data.pricing_tier,
+  format: l.data.quick_facts.format,
+  google_rating: l.data.google_rating,
+  google_review_count: l.data.google_review_count,
+  description_excerpt: l.data.description_th.slice(0, 120) + '...',
+  featured: l.data.featured,
+  claimed: l.data.claimed,
+  searchHaystack: [
+    l.data.name_th,
+    l.data.name_en || '',
+    l.data.description_th,
+    l.data.city,
+    l.data.district || '',
+    ...l.data.categories,
+    ...l.data.subjects,
+    ...l.data.target_schools,
+  ].join(' ').toLowerCase(),
+}));
+---
+
+<BaseLayout
+  title="ค้นหาสถาบันและติวเตอร์ | ติดฝัน"
+  description="ค้นหาสถาบันกวดวิชาและติวเตอร์ทั่วประเทศไทย กรองตามวิชา ระดับชั้น พื้นที่ ราคา และรูปแบบการเรียน"
+  noindex={true}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: 'ค้นหา' }]} />
+
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">ค้นหาสถาบันและติวเตอร์</h1>
+
+    <div class="bg-white border border-gray-200 rounded-xl p-4 mb-6">
+      <input
+        id="search-input"
+        type="search"
+        placeholder="ค้นหาด้วยชื่อ วิชา เมือง โรงเรียนเป้าหมาย..."
+        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      />
+      <div class="flex flex-wrap gap-3 mt-4 text-sm">
+        <select id="filter-category" class="px-3 py-2 border border-gray-300 rounded-lg">
+          <option value="">ทุกระดับ</option>
+          <option value="por1">ป.1</option>
+          <option value="mor1">ม.1</option>
+          <option value="mor4">ม.4</option>
+          <option value="uni">มหาวิทยาลัย</option>
+        </select>
+        <select id="filter-city" class="px-3 py-2 border border-gray-300 rounded-lg">
+          <option value="">ทุกพื้นที่</option>
+          <option value="bangkok">กรุงเทพ</option>
+          <option value="nonthaburi">นนทบุรี</option>
+          <option value="chiangmai">เชียงใหม่</option>
+          <option value="khonkaen">ขอนแก่น</option>
+          <option value="hatyai">หาดใหญ่</option>
+          <option value="online">ออนไลน์</option>
+        </select>
+        <select id="filter-tier" class="px-3 py-2 border border-gray-300 rounded-lg">
+          <option value="">ทุกระดับราคา</option>
+          <option value="budget">งบประหยัด</option>
+          <option value="mid">งบกลาง</option>
+          <option value="premium">พรีเมียม</option>
+        </select>
+      </div>
+    </div>
+
+    <p id="result-count" class="text-sm text-gray-600 mb-4">{allListingsData.length} ผลลัพธ์</p>
+    <div id="results" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+  </div>
+
+  <script define:vars={{ data: allListingsData }}>
+    const params = new URLSearchParams(window.location.search);
+    const input = document.getElementById('search-input');
+    const fc = document.getElementById('filter-category');
+    const fcity = document.getElementById('filter-city');
+    const ft = document.getElementById('filter-tier');
+    const results = document.getElementById('results');
+    const counter = document.getElementById('result-count');
+
+    if (params.get('q')) input.value = params.get('q');
+
+    const tierLabel = { budget: 'งบประหยัด', mid: 'งบกลาง', premium: 'พรีเมียม' };
+    const tierColor = { budget: 'bg-green-100 text-green-700', mid: 'bg-blue-100 text-blue-700', premium: 'bg-purple-100 text-purple-700' };
+    const formatLabel = { in_person: 'พบหน้า', online: 'ออนไลน์', hybrid: 'Hybrid' };
+    const catLabel = { por1: 'ป.1', mor1: 'ม.1', mor4: 'ม.4', uni: 'มหาลัย', all: 'ทุกระดับ' };
+
+    function render() {
+      const q = (input.value || '').toLowerCase().trim();
+      const cat = fc.value;
+      const city = fcity.value;
+      const tier = ft.value;
+
+      const filtered = data.filter(l => {
+        if (q && !l.searchHaystack.includes(q)) return false;
+        if (cat && !l.categories.includes(cat)) return false;
+        if (city && l.city !== city) return false;
+        if (tier && l.pricing_tier !== tier) return false;
+        return true;
+      });
+
+      counter.textContent = `${filtered.length} ผลลัพธ์`;
+      results.innerHTML = filtered.map(l => `
+        <a href="/listing/${l.slug}/" class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-indigo-300 transition-all">
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <div class="flex-1 min-w-0">
+              <h3 class="font-bold text-gray-900 mb-1 truncate">${l.name_th}</h3>
+              <p class="text-xs text-gray-500">${l.district ? l.district + ' · ' : ''}${l.city}</p>
+            </div>
+            ${l.featured ? '<span class="text-xs px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">★</span>' : ''}
+          </div>
+          <p class="text-sm text-gray-600 mb-3 line-clamp-2">${l.description_excerpt}</p>
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            ${l.categories.slice(0,3).map(c => `<span class="text-xs px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded-full">${catLabel[c] || c}</span>`).join('')}
+          </div>
+          <div class="flex items-center justify-between text-xs">
+            <span class="px-2 py-0.5 rounded-full font-medium ${tierColor[l.pricing_tier]}">${tierLabel[l.pricing_tier]}</span>
+            ${l.google_rating ? `<span class="text-gray-700">★ ${l.google_rating.toFixed(1)} (${l.google_review_count || 0})</span>` : ''}
+          </div>
+        </a>
+      `).join('') || '<p class="col-span-2 text-center text-gray-500 py-8">ไม่พบสถาบันที่ตรงกับเงื่อนไข ลองปรับการค้นหา</p>';
+    }
+
+    input.addEventListener('input', render);
+    fc.addEventListener('change', render);
+    fcity.addEventListener('change', render);
+    ft.addEventListener('change', render);
+    render();
+  </script>
+</BaseLayout>

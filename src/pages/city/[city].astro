@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const cities = await getCollection('cities');
+  return cities.map((c) => ({
+    params: { city: c.data.id },
+    props: { city: c.data },
+  }));
+}
+
+const { city } = Astro.props;
+const allListings = await getCollection('listings');
+const matching = allListings.filter(l => l.data.city === city.id);
+---
+
+<BaseLayout
+  title={`ติวเตอร์-สถาบันกวดวิชาใน ${city.name_th} | ติดฝัน`}
+  description={`รวมสถาบันกวดวิชาและติวเตอร์ทุกระดับใน ${city.name_th} เตรียมสอบเข้า ป.1 ม.1 ม.4 มหาวิทยาลัย เปรียบเทียบราคาและรูปแบบ`}
+>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: city.name_th }]} />
+
+    <header class="mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">ติวเตอร์-สถาบันกวดวิชาใน {city.name_th}</h1>
+      <p class="text-sm text-gray-500 mb-3">{city.region_th}</p>
+      <p class="text-gray-700 leading-relaxed">{city.description_th}</p>
+    </header>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">รวมสถาบันใน {city.name_th}</h2>
+      <p class="text-gray-600 mb-6">{matching.length} สถาบัน</p>
+      {matching.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {matching.map((l) => (
+            <ListingCard
+              slug={l.id}
+              name_th={l.data.name_th}
+              city={l.data.city}
+              district={l.data.district}
+              categories={l.data.categories}
+              subjects={l.data.subjects}
+              pricing_tier={l.data.pricing_tier}
+              format={l.data.quick_facts.format}
+              google_rating={l.data.google_rating}
+              google_review_count={l.data.google_review_count}
+              description_excerpt={l.data.description_th.slice(0, 120) + '...'}
+              featured={l.data.featured}
+              claimed={l.data.claimed}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+          <p class="text-gray-600">ยังไม่มีสถาบันใน {city.name_th} บน directory</p>
+          <p class="text-sm text-gray-500 mt-2">ถ้ารู้จักสถาบันใน {city.name_th} <a href="/contact/" class="text-indigo-600 hover:underline">ส่งมาให้เราเพิ่ม</a></p>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>

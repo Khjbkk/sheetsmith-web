@@ -1,0 +1,15 @@
+[
+  { "id": "math", "name_th": "คณิตศาสตร์", "description_th": "จากพื้นฐานบวกลบคูณหารถึงพีชคณิต ตรีโกณ แคลคูลัส", "icon": "🔢", "sort": 1 },
+  { "id": "science", "name_th": "วิทยาศาสตร์ (ทั่วไป)", "description_th": "วิทยาศาสตร์ระดับ ป.-ม.ต้น ครอบคลุมชีว เคมี ฟิสิกส์", "icon": "🔬", "sort": 2 },
+  { "id": "physics", "name_th": "ฟิสิกส์", "description_th": "กลศาสตร์ พลังงาน คลื่น ไฟฟ้า — ม.4 ขึ้นไป", "icon": "⚛️", "sort": 3 },
+  { "id": "chemistry", "name_th": "เคมี", "description_th": "อะตอม พันธะเคมี การคำนวณโมล ปฏิกิริยา", "icon": "🧪", "sort": 4 },
+  { "id": "biology", "name_th": "ชีววิทยา", "description_th": "เซลล์ พันธุศาสตร์ ระบบในร่างกาย", "icon": "🧬", "sort": 5 },
+  { "id": "english", "name_th": "ภาษาอังกฤษ", "description_th": "Grammar Vocabulary Reading Writing Speaking", "icon": "🔤", "sort": 6 },
+  { "id": "thai", "name_th": "ภาษาไทย", "description_th": "หลักภาษา คำศัพท์ การอ่าน วรรณคดี", "icon": "🇹🇭", "sort": 7 },
+  { "id": "social", "name_th": "สังคมศึกษา", "description_th": "ประวัติศาสตร์ ภูมิศาสตร์ หน้าที่พลเมือง เศรษฐศาสตร์", "icon": "🌏", "sort": 8 },
+  { "id": "iq", "name_th": "เชาว์ปัญญา / IQ", "description_th": "การคิดเชิงตรรกะ การหาความสัมพันธ์ การจำแนกประเภท สำหรับเด็กเล็ก", "icon": "🧠", "sort": 9 },
+  { "id": "readiness", "name_th": "ความพร้อมและทักษะ", "description_th": "การฟังคำสั่ง การปฏิบัติตาม การจดจ่อ สำหรับสอบเข้า ป.1", "icon": "🎯", "sort": 10 },
+  { "id": "sat", "name_th": "SAT", "description_th": "ข้อสอบมาตรฐานสำหรับสมัครมหาวิทยาลัยต่างประเทศ", "icon": "🎓", "sort": 11 },
+  { "id": "ielts", "name_th": "IELTS", "description_th": "ข้อสอบภาษาอังกฤษมาตรฐาน Academic / General", "icon": "🌐", "sort": 12 },
+  { "id": "toefl", "name_th": "TOEFL", "description_th": "ข้อสอบภาษาอังกฤษ iBT สำหรับเรียนต่อต่างประเทศ", "icon": "🌐", "sort": 13 }
+]

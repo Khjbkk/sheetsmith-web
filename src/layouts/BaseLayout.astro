@@ -16,17 +16,45 @@ interface Props {
 
 const props = Astro.props;
 
+// Organization schema — ติดฝัน operated by บริษัท ซิโอร่า จำกัด
 const orgSchema = {
   '@context': 'https://schema.org',
-  '@type': 'EducationalOrganization',
-  name: 'SheetSmith',
+  '@type': 'Organization',
+  name: 'ติดฝัน',
+  alternateName: ['TidFun', 'tidfun'],
+  legalName: 'บริษัท ซิโอร่า จำกัด',
   url: Astro.site?.toString(),
-  description: 'ตัวอย่างข้อสอบเตรียมสอบเข้า ป.1 ม.1 ม.4 โรงเรียนสาธิตและโรงเรียนชั้นนำ',
+  description: 'Directory แห่งสถาบันกวดวิชาและติวเตอร์ทั่วประเทศไทย เตรียมสอบเข้า ป.1 ม.1 ม.4 มหาวิทยาลัย',
   areaServed: { '@type': 'Country', name: 'Thailand' },
-  sameAs: [
-    'https://www.facebook.com/sheetsmith',
-    'https://line.me/ti/p/@sheetsmith',
+  knowsAbout: [
+    'การเตรียมสอบเข้าโรงเรียนสาธิต',
+    'การเตรียมสอบเข้าโรงเรียนชั้นนำ',
+    'การเตรียมสอบเข้ามหาวิทยาลัย',
+    'สถาบันกวดวิชา',
+    'ติวเตอร์',
   ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'info@tidfun.com',
+    contactType: 'customer service',
+    availableLanguage: ['Thai', 'English'],
+  },
+};
+
+// WebSite schema — enables sitelinks search box
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'ติดฝัน',
+  url: Astro.site?.toString(),
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${Astro.site?.toString().replace(/\/$/, '')}/search?q={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
 };
 ---
 
@@ -35,7 +63,8 @@ const orgSchema = {
   <head>
     <SEOHead {...props} />
     <script type="application/ld+json" set:html={JSON.stringify(orgSchema)} />
-    <!-- Google Analytics (GA4) - G-W0ND9TWZX6 -->
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    <!-- Google Analytics (GA4) — carried over from SheetSmith; re-tag after domain switch if needed -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-W0ND9TWZX6"></script>
     <script is:inline>
       window.dataLayer = window.dataLayer || [];
@@ -44,7 +73,7 @@ const orgSchema = {
       gtag('config', 'G-W0ND9TWZX6');
     </script>
   </head>
-  <body class="min-h-screen flex flex-col">
+  <body class="min-h-screen flex flex-col bg-white">
     <Header />
     <main class="flex-1">
       <slot />

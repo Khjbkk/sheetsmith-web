@@ -1,0 +1,130 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+---
+
+<BaseLayout
+  title="หาติวเตอร์ที่ใช่ใน 3 นาที — เครื่องมือฟรี"
+  description="ตอบคำถาม 5 ข้อ รับรายการสถาบันและติวเตอร์ที่ตรงกับลูกของคุณทันที — ฟรี ไม่ต้องลงทะเบียน"
+>
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: 'หาติวเตอร์ที่ใช่' }]} />
+
+    <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">หาติวเตอร์ที่ใช่ใน 3 นาที</h1>
+    <p class="text-gray-600 mb-8">ตอบคำถาม 5 ข้อ เราจะแสดงสถาบันและติวเตอร์ที่ตรงกับเงื่อนไขของคุณ ฟรี ไม่ต้องลงทะเบียน</p>
+
+    <div id="quiz" class="bg-white border border-gray-200 rounded-2xl p-8 shadow-sm">
+      <div id="step-progress" class="mb-6">
+        <div class="flex justify-between text-xs text-gray-500 mb-2"><span id="step-label">ข้อ 1 จาก 5</span><span id="step-percent">20%</span></div>
+        <div class="w-full bg-gray-200 rounded-full h-2"><div id="step-bar" class="bg-indigo-600 h-2 rounded-full transition-all" style="width: 20%"></div></div>
+      </div>
+
+      <div id="step-1" class="quiz-step">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">1. ลูกของคุณจะสอบเข้าระดับไหน?</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="quiz-btn" data-key="category" data-value="por1">ป.1 — โรงเรียนสาธิต</button>
+          <button class="quiz-btn" data-key="category" data-value="mor1">ม.1 — โรงเรียนชั้นนำ</button>
+          <button class="quiz-btn" data-key="category" data-value="mor4">ม.4 — เตรียมอุดม/MWIT</button>
+          <button class="quiz-btn" data-key="category" data-value="uni">มหาวิทยาลัย</button>
+        </div>
+      </div>
+
+      <div id="step-2" class="quiz-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">2. วิชาที่ลูกต้องเสริม?</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="quiz-btn" data-key="subject" data-value="math">คณิตศาสตร์</button>
+          <button class="quiz-btn" data-key="subject" data-value="science">วิทยาศาสตร์</button>
+          <button class="quiz-btn" data-key="subject" data-value="english">ภาษาอังกฤษ</button>
+          <button class="quiz-btn" data-key="subject" data-value="thai">ภาษาไทย</button>
+          <button class="quiz-btn" data-key="subject" data-value="iq">เชาว์ปัญญา (ป.1)</button>
+          <button class="quiz-btn" data-key="subject" data-value="">ครบทุกวิชา</button>
+        </div>
+      </div>
+
+      <div id="step-3" class="quiz-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">3. พื้นที่ที่สะดวก?</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <button class="quiz-btn" data-key="city" data-value="bangkok">กรุงเทพ</button>
+          <button class="quiz-btn" data-key="city" data-value="nonthaburi">นนทบุรี/ปริมณฑล</button>
+          <button class="quiz-btn" data-key="city" data-value="chiangmai">เชียงใหม่</button>
+          <button class="quiz-btn" data-key="city" data-value="khonkaen">ขอนแก่น</button>
+          <button class="quiz-btn" data-key="city" data-value="hatyai">หาดใหญ่</button>
+          <button class="quiz-btn" data-key="city" data-value="online">ออนไลน์</button>
+        </div>
+      </div>
+
+      <div id="step-4" class="quiz-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">4. งบประมาณต่อเดือน?</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button class="quiz-btn" data-key="tier" data-value="budget">งบประหยัด (น้อยกว่า ฿2,000)</button>
+          <button class="quiz-btn" data-key="tier" data-value="mid">งบกลาง (฿2,000-5,000)</button>
+          <button class="quiz-btn" data-key="tier" data-value="premium">พรีเมียม (มากกว่า ฿5,000)</button>
+        </div>
+      </div>
+
+      <div id="step-5" class="quiz-step hidden">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">5. รูปแบบการเรียนที่ชอบ?</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button class="quiz-btn" data-key="format" data-value="in_person">พบหน้าครู</button>
+          <button class="quiz-btn" data-key="format" data-value="online">เรียนออนไลน์</button>
+          <button class="quiz-btn" data-key="format" data-value="">ไม่แน่ใจ ขอดูทั้งหมด</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-xs text-gray-500 mt-4 text-center">ฟรี ไม่เก็บข้อมูลส่วนตัว ไม่ต้องลงทะเบียน</p>
+  </div>
+
+  <script is:inline>
+    let answers = {};
+    let currentStep = 1;
+    const totalSteps = 5;
+
+    function showStep(n) {
+      document.querySelectorAll('.quiz-step').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`step-${n}`).classList.remove('hidden');
+      const pct = (n / totalSteps) * 100;
+      document.getElementById('step-bar').style.width = pct + '%';
+      document.getElementById('step-label').textContent = `ข้อ ${n} จาก ${totalSteps}`;
+      document.getElementById('step-percent').textContent = pct + '%';
+    }
+
+    document.querySelectorAll('.quiz-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.dataset.key;
+        const value = btn.dataset.value;
+        if (value) answers[key] = value;
+        if (currentStep < totalSteps) {
+          currentStep++;
+          showStep(currentStep);
+        } else {
+          const params = new URLSearchParams();
+          if (answers.category) params.set('cat', answers.category);
+          if (answers.subject) params.set('sub', answers.subject);
+          if (answers.city) params.set('city', answers.city);
+          if (answers.tier) params.set('tier', answers.tier);
+          window.location.href = '/search?' + params.toString();
+        }
+      });
+    });
+  </script>
+
+  <style>
+    .quiz-btn {
+      padding: 0.875rem 1rem;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 0.75rem;
+      background: white;
+      color: #1f2937;
+      font-weight: 500;
+      text-align: left;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+    .quiz-btn:hover {
+      border-color: #4f46e5;
+      background: #eef2ff;
+      color: #4f46e5;
+    }
+  </style>
+</BaseLayout>

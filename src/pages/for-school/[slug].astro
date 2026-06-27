@@ -1,0 +1,103 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import FAQSection from '../../components/FAQSection.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const schools = await getCollection('schools');
+  return schools.map((s) => ({
+    params: { slug: s.data.id },
+    props: { school: s.data },
+  }));
+}
+
+const { school } = Astro.props;
+const allListings = await getCollection('listings');
+const matching = allListings.filter(l => l.data.target_schools.includes(school.id));
+
+const schoolFaq = [
+  {
+    question: `จะรู้ได้อย่างไรว่าสถาบันไหนเตรียมเข้า${school.name_th}ได้ดี?`,
+    answer: 'พิจารณา (1) ครูที่เคยติด/เคยสอนเข้าโรงเรียนนี้มาก่อน (2) มีตัวอย่างนักเรียนเก่าที่ติดและสามารถอ้างอิงได้ (3) หลักสูตรอ้างอิงข้อสอบจริงของโรงเรียนนี้โดยเฉพาะ (4) เปรียบเทียบ track record หลายสถาบันก่อนตัดสินใจ',
+  },
+  {
+    question: `ค่าเตรียมสอบเข้า${school.name_th}เฉลี่ยเท่าไหร่ตลอดคอร์ส?`,
+    answer: 'ขึ้นกับระยะเวลาและความเข้มข้น โดยทั่วไป งบประหยัด 10,000-30,000 บาทตลอดคอร์ส (กลุ่มใหญ่/ออนไลน์) งบกลาง 30,000-80,000 บาท (กลุ่ม 10-15 คน) งบพรีเมียม 80,000-300,000+ บาท (ห้องเล็ก/ติวเตอร์ส่วนตัว 12-18 เดือน)',
+  },
+  {
+    question: `ลูกเรียนโรงเรียนทั่วไป จะสอบเข้า${school.name_th}ได้ไหม?`,
+    answer: 'ได้ เด็กที่ติดโรงเรียนชั้นนำมาจากหลายๆ ที่ ไม่จำกัดว่าต้องอยู่โรงเรียน prep ใดเป็นพิเศษ ปัจจัยตัดสินคือคุณภาพการเตรียมตัวและความสม่ำเสมอ ไม่ใช่ชื่อโรงเรียนต้นทาง',
+  },
+  {
+    question: `ถ้าไม่ติด${school.name_th} ทางเลือกที่ดีคืออะไร?`,
+    answer: 'มีโรงเรียนคุณภาพสูงในระดับเดียวกันหลายแห่ง การไม่ติดโรงเรียนหนึ่งไม่ใช่จุดจบการศึกษา ติดฝันแนะนำให้สมัครสอบหลายโรงเรียนเพื่อเพิ่มโอกาส และโฟกัสที่คุณภาพการศึกษาระยะยาวมากกว่าชื่อสถาบัน',
+  },
+  {
+    question: `ติดฝันแนะนำสถาบันไหนสำหรับ${school.name_th}?`,
+    answer: 'ติดฝันไม่แนะนำสถาบันแบบเจาะจง แต่รวมรายชื่อสถาบันที่ระบุว่าเตรียมเข้าโรงเรียนนี้เพื่อให้ผู้ปกครองเปรียบเทียบเอง ติดต่อสถาบันโดยตรงเพื่อขอข้อมูล track record และ ทดลองเรียนก่อนตัดสินใจ',
+  },
+];
+
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: `เตรียมสอบเข้า ${school.name_th} — รวมสถาบันและติวเตอร์`,
+  url: `https://${Astro.site?.host}/for-school/${school.id}/`,
+  about: { '@type': 'EducationalOrganization', name: school.full_name_th, alternateName: school.name_th },
+};
+---
+
+<BaseLayout
+  title={`เตรียมสอบเข้า ${school.name_th} — รวมสถาบันและติวเตอร์ที่เชี่ยวชาญ | ติดฝัน`}
+  description={`รวมสถาบันกวดวิชาและติวเตอร์ที่เชี่ยวชาญเตรียมสอบเข้า ${school.full_name_th} เปรียบเทียบราคา รูปแบบ และวิธีการสอน เลือกที่เหมาะกับลูก`}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
+
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'เตรียมสอบเข้า', href: `/category/${school.level}/` },
+      { label: school.name_th },
+    ]} />
+
+    <header class="mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">เตรียมสอบเข้า {school.name_th}</h1>
+      <p class="text-sm text-gray-500 mb-4">{school.full_name_th}</p>
+      <p class="text-gray-700 leading-relaxed">{school.description_th}</p>
+    </header>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">สถาบันที่เตรียมสอบเข้า{school.name_th}</h2>
+      <p class="text-gray-600 mb-6">{matching.length} สถาบันที่ระบุว่าเชี่ยวชาญแนวข้อสอบนี้</p>
+      {matching.length > 0 ? (
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {matching.map((l) => (
+            <ListingCard
+              slug={l.id}
+              name_th={l.data.name_th}
+              city={l.data.city}
+              district={l.data.district}
+              categories={l.data.categories}
+              subjects={l.data.subjects}
+              pricing_tier={l.data.pricing_tier}
+              format={l.data.quick_facts.format}
+              google_rating={l.data.google_rating}
+              google_review_count={l.data.google_review_count}
+              description_excerpt={l.data.description_th.slice(0, 120) + '...'}
+              featured={l.data.featured}
+              claimed={l.data.claimed}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+          <p class="text-gray-600">กำลังรวบรวมสถาบันสำหรับเตรียมสอบเข้า{school.name_th}</p>
+          <p class="text-sm text-gray-500 mt-2">ถ้าคุณรู้จักสถาบันที่ดี <a href="/contact/" class="text-indigo-600 hover:underline">ส่งมาให้เราเพิ่ม</a></p>
+        </div>
+      )}
+    </section>
+
+    <FAQSection items={schoolFaq} title={`คำถามที่พบบ่อยเกี่ยวกับการสอบเข้า${school.name_th}`} />
+  </div>
+</BaseLayout>
