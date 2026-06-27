@@ -1,0 +1,42 @@
+[
+  {
+    "id": "best-online-tutor-por1",
+    "title_th": "ติวเตอร์ออนไลน์ที่ดีที่สุดสำหรับเตรียมสอบเข้า ป.1",
+    "intro_th": "รวมแพลตฟอร์มและสถาบันออนไลน์ที่เตรียมเด็กสอบเข้าโรงเรียนสาธิตในระดับ ป.1 คัดเลือกจากการที่เหมาะกับเด็กเล็ก ห้องเรียนขนาดที่ครูดูแลได้ และคะแนนรีวิวจาก Google",
+    "criteria_th": "Online only · เตรียม ป.1 · เหมาะกับเด็กอายุ 4-6 ปี",
+    "filter": { "type": ["online_only"], "categories": ["por1"] },
+    "sort": "google_rating_desc"
+  },
+  {
+    "id": "best-cram-school-mor1-bangkok",
+    "title_th": "สถาบันกวดวิชาเตรียมสอบเข้า ม.1 ที่ดีที่สุดในกรุงเทพ",
+    "intro_th": "รวมสถาบันกวดวิชาในกรุงเทพที่เชี่ยวชาญการเตรียมสอบเข้า ม.1 โรงเรียนสาธิตและโรงเรียนชั้นนำ คัดเลือกจากประสบการณ์ครู สถานที่ และคะแนนรีวิว",
+    "criteria_th": "Cram school · ม.1 · กรุงเทพ",
+    "filter": { "type": ["cram_school"], "categories": ["mor1"], "city": ["bangkok"] },
+    "sort": "google_rating_desc"
+  },
+  {
+    "id": "best-private-tutor-mor4",
+    "title_th": "ติวเตอร์ส่วนตัวที่ดีที่สุดสำหรับเตรียมสอบเข้า ม.4",
+    "intro_th": "ครูที่สอนตัวต่อตัว tailor-made ตามจุดอ่อนของนักเรียน เหมาะกับเด็กที่ต้องการ feedback เฉพาะตัวและทำคะแนนสูงในเตรียมอุดมหรือ MWIT",
+    "criteria_th": "Private tutor · ม.4 · 1-on-1",
+    "filter": { "type": ["private_tutor"], "categories": ["mor4"] },
+    "sort": "google_rating_desc"
+  },
+  {
+    "id": "best-budget-tutor-thailand",
+    "title_th": "ติวเตอร์งบประหยัดที่ดีที่สุด — เริ่มต้นต่ำกว่า 2,000 บาท/เดือน",
+    "intro_th": "สำหรับครอบครัวที่มีงบจำกัด รวมสถาบันคุณภาพดีที่ค่าเรียนต่ำกว่า 2,000 บาทต่อเดือน ส่วนใหญ่เป็นออนไลน์หรืออยู่ในจังหวัดที่ค่าครองชีพต่ำ",
+    "criteria_th": "งบประหยัด · ทุกระดับ · ทั่วประเทศ",
+    "filter": { "pricing_tier": ["budget"] },
+    "sort": "google_rating_desc"
+  },
+  {
+    "id": "best-uni-prep-sat-ielts",
+    "title_th": "ติวเตอร์ที่ดีที่สุดสำหรับเตรียมสอบเข้ามหาวิทยาลัยต่างประเทศ",
+    "intro_th": "สถาบันที่เชี่ยวชาญ SAT IELTS TOEFL สำหรับนักเรียนที่ตั้งเป้าหมายเรียนต่อ Ivy League หรือมหาวิทยาลัยชั้นนำของโลก",
+    "criteria_th": "Uni · SAT/IELTS/TOEFL · ระดับนานาชาติ",
+    "filter": { "categories": ["uni"] },
+    "sort": "google_rating_desc"
+  }
+]

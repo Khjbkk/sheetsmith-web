@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import NewsletterSignup from '../../components/NewsletterSignup.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const pillars = await getCollection('pillars');
+  return pillars.map((p) => ({
+    params: { slug: p.id },
+    props: { pillar: p },
+  }));
+}
+
+const { pillar } = Astro.props;
+const { Content } = await render(pillar);
+const d = pillar.data;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: d.title,
+  description: d.description,
+  datePublished: d.publishDate.toISOString(),
+  ...(d.updatedDate ? { dateModified: d.updatedDate.toISOString() } : {}),
+  author: { '@type': 'Organization', name: 'ติดฝัน', url: Astro.site?.toString() },
+  publisher: {
+    '@type': 'Organization',
+    name: 'ติดฝัน',
+    legalName: 'บริษัท ซิโอร่า จำกัด',
+  },
+};
+---
+
+<BaseLayout
+  title={d.title}
+  description={d.description}
+  type="article"
+  publishDate={d.publishDate}
+  updatedDate={d.updatedDate}
+>
+  <script type="application/ld+json" set:html={JSON.stringify(articleSchema)} />
+
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[{ label: d.title.slice(0, 80) }]} />
+
+    <article>
+      <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">{d.title}</h1>
+        <p class="text-gray-600 leading-relaxed mb-3">{d.description}</p>
+        <p class="text-xs text-gray-500">
+          เผยแพร่ {d.publishDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}
+          {d.updatedDate && ` · อัปเดต ${d.updatedDate.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}`}
+          · {d.author}
+        </p>
+      </header>
+
+      <div class="prose max-w-none">
+        <Content />
+      </div>
+    </article>
+
+    <NewsletterSignup variant="inline" />
+  </div>
+</BaseLayout>

@@ -2,12 +2,14 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ListingCard from '../components/ListingCard.astro';
 import FAQSection from '../components/FAQSection.astro';
+import NewsletterSignup from '../components/NewsletterSignup.astro';
 import { getCollection } from 'astro:content';
 
 const listings = await getCollection('listings');
 const categories = await getCollection('categories');
 const schools = await getCollection('schools');
 const cities = await getCollection('cities');
+const pillars = await getCollection('pillars');
 
 const featured = listings.filter(l => l.data.featured).slice(0, 6);
 const recent = listings.slice(0, 8);
@@ -186,6 +188,25 @@ const homeFaq = [
         </a>
       </div>
     </section>
+
+    <!-- Pillar articles -->
+    {pillars.length > 0 && (
+      <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">บทความและคู่มือเตรียมสอบ</h2>
+        <p class="text-gray-600 mb-6">เนื้อหายาวเกี่ยวกับการเลือกติวเตอร์ การวางแผนเตรียมสอบ และค่าใช้จ่าย</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {pillars.map((p) => (
+            <a href={`/pillars/${p.id}/`} class="block bg-white border border-gray-200 rounded-xl p-5 hover:shadow-md hover:border-indigo-300 transition-all group">
+              <h3 class="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2 line-clamp-2">{p.data.title}</h3>
+              <p class="text-sm text-gray-600 leading-relaxed line-clamp-3">{p.data.description}</p>
+              <p class="text-xs text-indigo-600 mt-3">อ่านต่อ &rarr;</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <NewsletterSignup variant="inline" />
 
     <FAQSection items={homeFaq} />
 

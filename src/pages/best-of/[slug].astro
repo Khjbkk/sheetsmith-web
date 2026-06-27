@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ListingCard from '../../components/ListingCard.astro';
+import { getCollection } from 'astro:content';
+import bestOfData from '../../data/best_of.json';
+
+export async function getStaticPaths() {
+  const listings = await getCollection('listings');
+  return bestOfData.map((page) => {
+    const filtered = listings.filter(l => {
+      const f = page.filter as any;
+      if (f.type && !f.type.includes(l.data.type)) return false;
+      if (f.categories && !f.categories.some((c: string) => l.data.categories.includes(c as any))) return false;
+      if (f.city && !f.city.includes(l.data.city)) return false;
+      if (f.pricing_tier && !f.pricing_tier.includes(l.data.pricing_tier)) return false;
+      if (f.subjects && !f.subjects.some((s: string) => l.data.subjects.includes(s as any))) return false;
+      return true;
+    });
+    // Sort
+    const sorted = filtered.sort((a, b) => (b.data.google_rating || 0) - (a.data.google_rating || 0));
+    return {
+      params: { slug: page.id },
+      props: { page, listings: sorted },
+    };
+  });
+}
+
+const { page, listings } = Astro.props;
+
+const pageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: page.title_th,
+  description: page.intro_th,
+  itemListElement: listings.map((l: any, i: number) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    name: l.data.name_th,
+    url: `${Astro.site}listing/${l.id}/`,
+  })),
+};
+---
+
+<BaseLayout title={page.title_th} description={page.intro_th}>
+  <script type="application/ld+json" set:html={JSON.stringify(pageSchema)} />
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'Best of' },
+      { label: page.title_th.slice(0, 60) },
+    ]} />
+
+    <header class="mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">{page.title_th}</h1>
+      <p class="text-sm text-gray-500 mb-3">{page.criteria_th}</p>
+      <p class="text-gray-700 leading-relaxed">{page.intro_th}</p>
+    </header>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">อันดับ ({listings.length} รายการ)</h2>
+      <p class="text-gray-600 mb-6">เรียงตามคะแนนรีวิว Google สูงสุด</p>
+      {listings.length > 0 ? (
+        <div class="space-y-4">
+          {listings.map((l: any, i: number) => (
+            <div class="bg-white border border-gray-200 rounded-xl p-5 flex items-start gap-4">
+              <div class="text-3xl font-bold text-indigo-600 shrink-0 w-12 text-center">#{i + 1}</div>
+              <div class="flex-1">
+                <a href={`/listing/${l.id}/`} class="block group">
+                  <h3 class="font-bold text-lg text-gray-900 group-hover:text-indigo-600 transition-colors mb-1">{l.data.name_th}</h3>
+                  <p class="text-xs text-gray-500 mb-2">{l.data.district ? l.data.district + ' · ' : ''}{l.data.city} · {l.data.quick_facts.price_range}</p>
+                </a>
+                <p class="text-sm text-gray-600 leading-relaxed mb-2 line-clamp-2">{l.data.description_th.slice(0, 180)}...</p>
+                {l.data.google_rating && (
+                  <p class="text-sm">
+                    <span class="text-amber-500">★</span>
+                    <span class="font-semibold text-gray-900">{l.data.google_rating.toFixed(1)}</span>
+                    <span class="text-gray-500">({l.data.google_review_count} รีวิว)</span>
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-8 text-center">
+          <p class="text-gray-600">กำลังรวบรวมข้อมูลเร็วๆ นี้</p>
+        </div>
+      )}
+    </section>
+
+    <section class="my-10 bg-indigo-50 border border-indigo-200 rounded-xl p-6">
+      <h3 class="font-bold text-indigo-900 mb-3">วิธีอ่านรายการ Best of</h3>
+      <ul class="text-sm text-gray-700 space-y-1.5 list-disc list-inside">
+        <li>อันดับเรียงตามคะแนนรีวิว Google เป็นตัวชี้วัดหลัก ไม่ใช่ความเห็นของทีมงานติดฝัน</li>
+        <li>สถาบันที่ไม่มี Google Reviews จะถูกจัดท้ายรายการ</li>
+        <li>คะแนนรีวิวเป็นตัวเลือกเริ่มต้น แต่ไม่ใช่ตัวชี้วัดเดียว ควรพิจารณาราคา รูปแบบ และตัวลูกประกอบกัน</li>
+        <li>ทดลองเรียนกับสถาบันที่สนใจ 1-2 อันดับแรกก่อนตัดสินใจ</li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>

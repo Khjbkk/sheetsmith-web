@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const listings = await getCollection('listings');
+  const pairs: { params: { combo: string }; props: any }[] = [];
+
+  // Pair listings within the same category for sensible comparisons
+  for (let i = 0; i < listings.length; i++) {
+    for (let j = i + 1; j < listings.length; j++) {
+      const a = listings[i];
+      const b = listings[j];
+      const sharedCat = a.data.categories.find(c => b.data.categories.includes(c));
+      if (!sharedCat) continue;
+      // Use alphabetical slug order so the URL is canonical
+      const [first, second] = a.id < b.id ? [a, b] : [b, a];
+      pairs.push({
+        params: { combo: `${first.id}-vs-${second.id}` },
+        props: { a: first, b: second, sharedCat },
+      });
+    }
+  }
+  return pairs;
+}
+
+const { a, b, sharedCat } = Astro.props;
+
+const categoryLabel: Record<string, string> = {
+  por1: 'เตรียมสอบเข้า ป.1',
+  mor1: 'เตรียมสอบเข้า ม.1',
+  mor4: 'เตรียมสอบเข้า ม.4',
+  uni: 'เตรียมสอบเข้ามหาวิทยาลัย',
+  all: 'ทุกระดับ',
+};
+const tierLabel = { budget: 'งบประหยัด', mid: 'งบกลาง', premium: 'พรีเมียม' };
+const formatLabel: Record<string, string> = {
+  in_person: 'พบหน้า', online: 'ออนไลน์', hybrid: 'Hybrid',
+};
+
+// Build comparison table rows
+const rows = [
+  { label: 'ราคา', a: a.data.quick_facts.price_range, b: b.data.quick_facts.price_range },
+  { label: 'ขนาดห้องเรียน', a: a.data.quick_facts.class_size, b: b.data.quick_facts.class_size },
+  { label: 'รูปแบบ', a: a.data.quick_facts.format.map(f => formatLabel[f] || f).join(', '), b: b.data.quick_facts.format.map(f => formatLabel[f] || f).join(', ') },
+  { label: 'ช่วงอายุ', a: a.data.quick_facts.age_range, b: b.data.quick_facts.age_range },
+  { label: 'ระดับราคา', a: tierLabel[a.data.pricing_tier], b: tierLabel[b.data.pricing_tier] },
+  { label: 'พื้นที่', a: a.data.city + (a.data.district ? ' / ' + a.data.district : ''), b: b.data.city + (b.data.district ? ' / ' + b.data.district : '') },
+  { label: 'ก่อตั้งปี', a: a.data.founded_year || '-', b: b.data.founded_year || '-' },
+  { label: 'คะแนน Google', a: a.data.google_rating ? `${a.data.google_rating}★ (${a.data.google_review_count || 0} รีวิว)` : 'ไม่มีข้อมูล', b: b.data.google_rating ? `${b.data.google_rating}★ (${b.data.google_review_count || 0} รีวิว)` : 'ไม่มีข้อมูล' },
+  { label: 'วิชา', a: a.data.subjects.join(', '), b: b.data.subjects.join(', ') },
+];
+
+const title = `${a.data.name_th} vs ${b.data.name_th} — เปรียบเทียบ ${categoryLabel[sharedCat]}`;
+const description = `เปรียบเทียบ ${a.data.name_th} กับ ${b.data.name_th} ราคา รูปแบบการเรียน คุณภาพ คะแนนรีวิว ครู และจุดเด่นของแต่ละสถาบัน`;
+---
+
+<BaseLayout title={title} description={description}>
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <Breadcrumb items={[
+      { label: 'เปรียบเทียบ' },
+      { label: `${a.data.name_th} vs ${b.data.name_th}` },
+    ]} />
+
+    <header class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
+        {a.data.name_th} <span class="text-gray-400">vs</span> {b.data.name_th}
+      </h1>
+      <p class="text-gray-600">เปรียบเทียบสำหรับ {categoryLabel[sharedCat]}</p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <a href={`/listing/${a.id}/`} class="block bg-white border-2 border-indigo-200 rounded-xl p-6 hover:shadow-md transition-all">
+        <p class="text-xs text-indigo-600 font-semibold mb-2">A</p>
+        <h2 class="font-bold text-xl text-gray-900 mb-2">{a.data.name_th}</h2>
+        <p class="text-sm text-gray-600 mb-3 line-clamp-3">{a.data.description_th.slice(0, 200)}...</p>
+        <span class="text-sm text-indigo-600 hover:underline">ดูรายละเอียดเต็ม &rarr;</span>
+      </a>
+      <a href={`/listing/${b.id}/`} class="block bg-white border-2 border-purple-200 rounded-xl p-6 hover:shadow-md transition-all">
+        <p class="text-xs text-purple-600 font-semibold mb-2">B</p>
+        <h2 class="font-bold text-xl text-gray-900 mb-2">{b.data.name_th}</h2>
+        <p class="text-sm text-gray-600 mb-3 line-clamp-3">{b.data.description_th.slice(0, 200)}...</p>
+        <span class="text-sm text-purple-600 hover:underline">ดูรายละเอียดเต็ม &rarr;</span>
+      </a>
+    </section>
+
+    <section class="mb-10">
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">ตารางเปรียบเทียบ</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm bg-white border border-gray-200 rounded-xl overflow-hidden">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold text-gray-700">หัวข้อ</th>
+              <th class="px-4 py-3 text-left font-semibold text-indigo-700">{a.data.name_th}</th>
+              <th class="px-4 py-3 text-left font-semibold text-purple-700">{b.data.name_th}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, idx) => (
+              <tr class={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}>
+                <td class="px-4 py-3 font-medium text-gray-700">{r.label}</td>
+                <td class="px-4 py-3 text-gray-900">{r.a}</td>
+                <td class="px-4 py-3 text-gray-900">{r.b}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="mb-10 grid md:grid-cols-2 gap-6">
+      <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6">
+        <h3 class="font-bold text-indigo-900 mb-3">{a.data.name_th} เหมาะกับใคร</h3>
+        <p class="text-sm text-gray-700 leading-relaxed">{a.data.speakable_th[1]}</p>
+      </div>
+      <div class="bg-purple-50 border border-purple-200 rounded-xl p-6">
+        <h3 class="font-bold text-purple-900 mb-3">{b.data.name_th} เหมาะกับใคร</h3>
+        <p class="text-sm text-gray-700 leading-relaxed">{b.data.speakable_th[1]}</p>
+      </div>
+    </section>
+
+    <section class="my-10 bg-amber-50 border border-amber-200 rounded-xl p-6">
+      <h3 class="font-bold text-amber-900 mb-3">วิธีตัดสินใจ</h3>
+      <ul class="text-sm text-gray-700 space-y-2 list-disc list-inside">
+        <li>เลือก <strong>{a.data.name_th}</strong> ถ้าให้ความสำคัญกับ {tierLabel[a.data.pricing_tier]} + รูปแบบ {a.data.quick_facts.format.map(f => formatLabel[f] || f).join('/')}</li>
+        <li>เลือก <strong>{b.data.name_th}</strong> ถ้าให้ความสำคัญกับ {tierLabel[b.data.pricing_tier]} + รูปแบบ {b.data.quick_facts.format.map(f => formatLabel[f] || f).join('/')}</li>
+        <li>ทดลองเรียนทั้งสองที่ก่อนตัดสินใจ — สถาบันส่วนใหญ่ให้ทดลองฟรี 1 ครั้ง</li>
+        <li>คุยกับผู้ปกครองที่เคยส่งลูกเรียนทั้งสองที่ผ่าน Pantip หรือ Facebook groups</li>
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
