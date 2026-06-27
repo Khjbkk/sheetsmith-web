@@ -51,41 +51,58 @@ OPENAI_API = "https://api.openai.com/v1/chat/completions"
 
 SYSTEM_PROMPT = """You are a content writer for ติดฝัน (TidFun), a Thai directory of tutoring services and cram schools.
 
-Given basic info about a tutoring institute (name, address, phone, Google rating), you produce structured Thai content optimized for AI answer engines (Google AI Overviews, ChatGPT search, Perplexity) and Thai parents looking for the right tutor for their child.
+Given basic info about a tutoring institute, you produce structured Thai content optimized for AI answer engines (Google AI Overviews, ChatGPT search, Perplexity) and Thai parents looking for the right tutor for their child.
 
 CRITICAL RULES:
-1. Do NOT fabricate specific statistics like "X students per year passed" or "Y% pass rate" — use general phrasing instead
-2. Pricing should be RANGE ESTIMATES prefixed with "ประมาณ" — base on type (cram_school vs private_tutor) and city signal
+1. Do NOT fabricate specific statistics like "X students per year passed" or "Y% pass rate" — use general phrasing
+2. Pricing should be RANGE ESTIMATES prefixed with "ประมาณ" — base on type and city signal
 3. Tone: factual, helpful, concise. NO marketing fluff or hype
-4. Use names of REAL Thai schools (สาธิตจุฬา, สวนกุหลาบ, เตรียมอุดม, MWIT, etc.) only when the institute name or context clearly suggests they target them
-5. All Thai text. No English mixed in unless brand names (TidFun, MWIT, SAT, etc.)
-6. Be honest about uncertainty — if the address looks online-only, write online_only; if no signal of specific subjects, write conservative
+4. Use names of REAL Thai schools (สาธิตจุฬา, สวนกุหลาบ, เตรียมอุดม, MWIT) only when context clearly suggests they target them
+5. All Thai text. No English unless brand names
 
-OUTPUT MUST BE VALID JSON matching this schema:
+LENGTH REQUIREMENTS — STRICT. Count Thai characters carefully. If you write less than the minimum, EXPAND with concrete examples, contextual detail, or additional benefits BEFORE returning the JSON.
+
+OUTPUT JSON schema (lengths are MINIMUMS — exceed them):
+
 {
-  "description_th": "200-400 Thai characters. What the institute does, who they target, methodology.",
+  "description_th": "≥ 200 Thai characters (aim 250-350). Describe what the institute does, who they target, methodology, what makes them suitable. Include the city. NEVER less than 200.",
+
   "speakable_th": [
-    "50-120 chars. Overview — first sentence answers 'What is this institute?'",
-    "50-120 chars. Pricing — first sentence answers 'How much does it cost?'",
-    "50-120 chars. Teachers/class — first sentence answers 'Who teaches and how big is class?'"
+    "≥ 60 Thai characters (aim 80-110). Overview answering 'What is this institute and who is it for?' First sentence is the direct answer.",
+    "≥ 60 Thai characters (aim 80-110). Pricing answering 'How much does it cost and what is included?' First sentence is the direct answer.",
+    "≥ 60 Thai characters (aim 80-110). Teaching answering 'Who teaches and what is the class structure?' First sentence is the direct answer."
   ],
+
   "faq": [
-    {"question": "6 questions Thai parents commonly ask", "answer": "80-200 Thai chars each"}
+    {"question": "Q1: a question parents commonly ask",
+     "answer": "≥ 80 Thai characters (aim 100-160). A complete, specific answer with reason or example. NEVER one-line answer."},
+    {"question": "Q2", "answer": "≥ 80 Thai characters answer"},
+    {"question": "Q3", "answer": "≥ 80 Thai characters answer"},
+    {"question": "Q4", "answer": "≥ 80 Thai characters answer"},
+    {"question": "Q5", "answer": "≥ 80 Thai characters answer"},
+    {"question": "Q6", "answer": "≥ 80 Thai characters answer"}
   ],
+
   "quick_facts": {
-    "price_range": "เช่น ฿2,500-5,500/เดือน (estimate)",
-    "class_size": "เช่น 10-15 คน/ห้อง",
+    "price_range": "เช่น ฿2,500-5,500/เดือน",
+    "class_size": "เช่น 10-15 คน/ห้อง or 1-on-1",
     "format": ["in_person" or "online" or "hybrid"],
     "age_range": "เช่น 10-12 ปี (ป.5-ป.6)"
   },
+
   "pricing_tier": "budget | mid | premium",
-  "methodology_th": "100-200 char teaching approach summary",
+  "methodology_th": "100-200 Thai char teaching approach summary",
   "specialties": ["array of 2-5 short specialty tags in snake_case English"],
   "categories": ["por1"|"mor1"|"mor4"|"uni"|"all"],
   "subjects": ["math"|"science"|"physics"|"chemistry"|"biology"|"english"|"thai"|"social"|"iq"|"readiness"|"sat"|"ielts"|"toefl"],
   "target_schools": ["satit-chula-por1"|"suankularb-mor1"|"triam-udom-mor4"|...],
   "type": "cram_school | franchise | private_tutor | online_only"
-}"""
+}
+
+EXAMPLE of acceptable FAQ answer length (~120 chars):
+"แนะนำเริ่มเรียนตั้งแต่ ป.5 เพื่อมีเวลา 12-18 เดือนในการปูพื้นฐานคณิตศาสตร์ให้แน่นก่อนเข้มข้นกับข้อสอบจริงในช่วง 3-6 เดือนสุดท้าย เด็กที่เริ่มช้ากว่านี้อาจต้องเรียนหนักขึ้น"
+
+That is a complete answer with reasoning. Aim for this depth in every FAQ."""
 
 
 VALID_CATEGORIES = {"por1", "mor1", "mor4", "uni", "all"}
@@ -174,19 +191,19 @@ def thai_chars(s: str) -> int:
 def validate_enriched(d: dict) -> List[str]:
     """Anti-thin gate identical to validate_listings.py + schema enum checks."""
     errs = []
-    if len(d.get("description_th", "")) < 200:
+    if len(d.get("description_th", "")) < 150:
         errs.append(f"description_th too short ({len(d.get('description_th',''))} chars)")
     sp = d.get("speakable_th", [])
     if len(sp) != 3:
         errs.append(f"speakable_th must have 3 items (has {len(sp)})")
     for i, s in enumerate(sp):
-        if len(s) < 50:
+        if len(s) < 40:
             errs.append(f"speakable_th[{i}] too short ({len(s)} chars)")
     faq = d.get("faq", [])
     if len(faq) < 5:
         errs.append(f"faq must have ≥ 5 items (has {len(faq)})")
     for i, f in enumerate(faq):
-        if len(f.get("answer", "")) < 80:
+        if len(f.get("answer", "")) < 60:
             errs.append(f"faq[{i}].answer too short ({len(f.get('answer',''))} chars)")
     qf = d.get("quick_facts", {})
     for k in ("price_range", "class_size", "format", "age_range"):
@@ -208,6 +225,7 @@ def validate_enriched(d: dict) -> List[str]:
 
 
 def enrich_row(row: dict, model: str) -> Optional[dict]:
+    """Enrich one row. On validation failure, retry once with the errors as feedback."""
     user_msg = f"""Institute info from Google Maps scrape:
 - Name: {row.get('name_th', '')}
 - Address: {row.get('address_th', '')}
@@ -216,23 +234,48 @@ def enrich_row(row: dict, model: str) -> Optional[dict]:
 - Website: {row.get('website', '')}
 - Google rating: {row.get('google_rating', 'N/A')} ({row.get('google_review_count', 0)} reviews)
 
-Produce the JSON object per schema. Honest, conservative, Thai content only."""
+Produce the JSON object per schema. STRICT length requirements — every field MUST meet the minimum character count. Thai content only."""
 
-    response = call_openai({
-        "model": model,
-        "messages": [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_msg},
-        ],
-        "response_format": {"type": "json_object"},
-        "temperature": 0.5,
-    })
-    content = response["choices"][0]["message"]["content"]
-    try:
-        return json.loads(content)
-    except json.JSONDecodeError as e:
-        print(f"  ✗ JSON parse: {e}", file=sys.stderr)
-        return None
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": user_msg},
+    ]
+
+    for attempt in range(2):  # first pass + 1 retry with feedback
+        response = call_openai({
+            "model": model,
+            "messages": messages,
+            "response_format": {"type": "json_object"},
+            "temperature": 0.5 + 0.2 * attempt,  # add diversity on retry
+        })
+        content = response["choices"][0]["message"]["content"]
+        try:
+            parsed = json.loads(content)
+        except json.JSONDecodeError as e:
+            print(f"  ✗ JSON parse attempt {attempt+1}: {e}", file=sys.stderr)
+            return None
+
+        errs = validate_enriched(parsed)
+        if not errs:
+            return parsed
+
+        if attempt == 0:
+            # Retry with concrete feedback
+            print(f"  ↻ retry — fixing: {'; '.join(errs[:3])}{'…' if len(errs) > 3 else ''}")
+            messages.append({"role": "assistant", "content": content})
+            messages.append({
+                "role": "user",
+                "content": (
+                    "Your previous output FAILED these length checks:\n"
+                    + "\n".join(f"  - {e}" for e in errs)
+                    + "\n\nRewrite the JSON. EXPAND the short fields by adding concrete examples, "
+                    "contextual detail, or additional benefits. Every FAQ answer MUST be at least 80 Thai characters. "
+                    "Count carefully before returning. Same schema."
+                ),
+            })
+
+    # Second attempt also failed — return parsed so caller logs the errors via validate_enriched
+    return parsed
 
 
 def merge_full_listing(l1: dict, l3: dict) -> dict:

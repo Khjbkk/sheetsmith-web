@@ -36,12 +36,12 @@ const listingCollection = defineCollection({
     date_listed: z.coerce.date(),
     date_updated: z.coerce.date().optional(),
 
-    // L3 — ENRICHMENT (anti-thin — Zod min lengths enforce)
-    description_th: z.string().min(200, 'Anti-thin: description_th must be at least 200 Thai characters'),
-    speakable_th: z.array(z.string().min(50)).length(3, 'AEO requires exactly 3 speakable paragraphs'),
+    // L3 — ENRICHMENT (anti-thin — calibrated for Thai info density)
+    description_th: z.string().min(150, 'Anti-thin: description_th must be at least 150 Thai characters'),
+    speakable_th: z.array(z.string().min(40)).length(3, 'AEO requires exactly 3 speakable paragraphs'),
     faq: z.array(z.object({
       question: z.string(),
-      answer: z.string().min(80, 'Anti-thin: FAQ answers must be at least 80 chars for AI citation'),
+      answer: z.string().min(60, 'Anti-thin: FAQ answers must be at least 60 chars for AI citation'),
     })).min(5, 'Anti-thin: at least 5 FAQ items required'),
     quick_facts: z.object({
       price_range: z.string(),

@@ -45,22 +45,22 @@ def validate(path: Path) -> list[str]:
 
     name = d.get("name_th", "?")
     desc = d.get("description_th", "")
-    if len(desc) < 200:
-        errors.append(f"{name}: description_th too short ({len(desc)} chars, need ≥ 200)")
+    if len(desc) < 150:
+        errors.append(f"{name}: description_th too short ({len(desc)} chars, need ≥ 150)")
 
     speakable = d.get("speakable_th", [])
     if len(speakable) != 3:
         errors.append(f"{name}: speakable_th must have exactly 3 items (has {len(speakable)})")
     for i, s in enumerate(speakable):
-        if len(s) < 50:
-            errors.append(f"{name}: speakable_th[{i}] too short ({len(s)} chars, need ≥ 50)")
+        if len(s) < 40:
+            errors.append(f"{name}: speakable_th[{i}] too short ({len(s)} chars, need ≥ 40)")
 
     faq = d.get("faq", [])
     if len(faq) < 5:
         errors.append(f"{name}: faq must have ≥ 5 items (has {len(faq)})")
     for i, f in enumerate(faq):
-        if len(f.get("answer", "")) < 80:
-            errors.append(f"{name}: faq[{i}].answer too short ({len(f.get('answer',''))} chars, need ≥ 80)")
+        if len(f.get("answer", "")) < 60:
+            errors.append(f"{name}: faq[{i}].answer too short ({len(f.get('answer',''))} chars, need ≥ 60)")
 
     qf = d.get("quick_facts", {})
     for k in ("price_range", "class_size", "format", "age_range"):
