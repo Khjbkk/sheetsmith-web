@@ -17,6 +17,17 @@ const { city } = Astro.props;
 const allListings = await getCollection('listings');
 const matching = allListings.filter(l => l.data.city === city.id);
 
+// Adjacent cities (same region) — regional rollup signal + internal linking
+const allCitiesCol = await getCollection('cities');
+const peerCities = allCitiesCol
+  .filter(c => c.data.region_th === city.region_th && c.data.id !== city.id && c.data.id !== 'online')
+  .map(c => ({
+    ...c.data,
+    listingCount: allListings.filter(l => l.data.city === c.data.id).length,
+  }))
+  .sort((a, b) => b.listingCount - a.listingCount)
+  .slice(0, 6);
+
 // City stats for the answer block
 const ratedCount = matching.filter(l => l.data.google_rating).length;
 const avgRating = ratedCount > 0
@@ -174,6 +185,21 @@ const cityFaqSchema = cityFaqs.length > 0 ? {
 
     {cityFaqs.length > 0 && (
       <FAQSection items={cityFaqs} title={`คำถามที่พบบ่อยเกี่ยวกับติวเตอร์ใน ${city.name_th}`} />
+    )}
+
+    {peerCities.length > 0 && (
+      <section class="my-10 bg-gray-50 border border-gray-200 rounded-2xl p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-2">จังหวัดใกล้เคียงใน{city.region_th}</h2>
+        <p class="text-gray-600 mb-5 text-sm">หากไม่พบสถาบันที่ใช่ใน {city.name_th} ลองดูจังหวัดข้างเคียง</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {peerCities.map(p => (
+            <a href={`/city/${p.id}/`} class="block bg-white border border-gray-200 rounded-lg p-3 text-center hover:shadow-md hover:border-indigo-300 transition-all group">
+              <p class="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors text-sm line-clamp-1">{p.name_th}</p>
+              <p class="text-xs text-gray-500 mt-1">{p.listingCount > 0 ? `${p.listingCount} สถาบัน` : 'รวบรวมข้อมูล'}</p>
+            </a>
+          ))}
+        </div>
+      </section>
     )}
   </div>
 </BaseLayout>
