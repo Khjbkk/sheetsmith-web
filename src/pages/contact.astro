@@ -1,12 +1,46 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
+
+const contactSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  '@id': 'https://tidfun.org/contact/',
+  url: 'https://tidfun.org/contact/',
+  name: 'ติดต่อ ติดฝัน',
+  description: 'ติดต่อทีมงานติดฝัน (TidFun) ผ่าน Email หรือ LINE สอบถามข้อมูล แนะนำสถาบัน เพิ่มสถาบัน หรือร่วมงาน — ตอบกลับ Email ภายใน 24 ชม.',
+  inLanguage: 'th',
+  isPartOf: { '@id': 'https://tidfun.org/#org' },
+  mainEntity: {
+    '@type': 'Organization',
+    '@id': 'https://tidfun.org/#org',
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        email: 'info@tidfun.com',
+        contactType: 'customer service',
+        availableLanguage: ['Thai', 'English'],
+        hoursAvailable: { '@type': 'OpeningHoursSpecification', dayOfWeek: ['Monday','Tuesday','Wednesday','Thursday','Friday'], opens: '09:00', closes: '18:00' },
+        responseTime: 'P1D',
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'sales',
+        email: 'info@tidfun.com',
+        availableLanguage: ['Thai'],
+        productSupported: ['Featured listing', 'Newsletter sponsorship'],
+      },
+    ],
+  },
+};
 ---
 
 <BaseLayout
   title="ติดต่อ ติดฝัน"
   description="ติดต่อทีมงาน ติดฝัน (TidFun) สอบถาม แนะนำสถาบัน หรือร่วมงานกับเรา ผ่าน Email หรือ LINE"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(contactSchema)} />
+
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
     <Breadcrumb items={[{ label: 'ติดต่อเรา' }]} />
 

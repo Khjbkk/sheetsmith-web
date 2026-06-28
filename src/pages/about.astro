@@ -1,12 +1,34 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumb from '../components/Breadcrumb.astro';
+
+const aboutSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'AboutPage',
+  '@id': 'https://tidfun.org/about/',
+  url: 'https://tidfun.org/about/',
+  name: 'เกี่ยวกับ ติดฝัน',
+  description: 'ติดฝัน (TidFun) directory แห่งสถาบันกวดวิชาและติวเตอร์ทั่วประเทศไทย พันธกิจ วิธีการทำงาน 4 ขั้น และที่มาของรายได้ ดำเนินงานโดยบริษัท ซิโอร่า จำกัด',
+  inLanguage: 'th',
+  isPartOf: { '@id': 'https://tidfun.org/#org' },
+  about: { '@id': 'https://tidfun.org/#org' },
+  mainEntity: { '@id': 'https://tidfun.org/#org' },
+  primaryImageOfPage: { '@type': 'ImageObject', url: 'https://tidfun.org/logo.png' },
+  relatedLink: [
+    'https://tidfun.org/editorial-standards/',
+    'https://tidfun.org/privacy/',
+    'https://tidfun.org/terms/',
+    'https://tidfun.org/contact/',
+  ],
+};
 ---
 
 <BaseLayout
   title="เกี่ยวกับ ติดฝัน"
   description="ติดฝัน (TidFun) Directory แห่งสถาบันกวดวิชาและติวเตอร์ทั่วประเทศไทย ดำเนินงานโดย บริษัท ซิโอร่า จำกัด พันธกิจ ทีมงาน วิธีการรวบรวมข้อมูล"
 >
+  <script type="application/ld+json" set:html={JSON.stringify(aboutSchema)} />
+
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
     <Breadcrumb items={[{ label: 'เกี่ยวกับเรา' }]} />
 

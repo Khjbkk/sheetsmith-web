@@ -7,8 +7,14 @@ export const GET: APIRoute = async ({ site }) => {
   const listings = await getCollection('listings');
 
   const now = new Date().toISOString();
+  // Site-level lastmod = most-recently-updated listing (fresh content signal)
+  const siteLatest = listings.reduce<Date>((acc, l) => {
+    const d = (l.data.date_updated || l.data.date_listed) as Date;
+    return d > acc ? d : acc;
+  }, new Date(0)).toISOString();
+
   const urls: { loc: string; lastmod: string; priority: number }[] = [
-    { loc: `${site}`, lastmod: now, priority: 1.0 },
+    { loc: `${site}`, lastmod: siteLatest, priority: 1.0 },
     { loc: `${site}search`, lastmod: now, priority: 0.5 },
     { loc: `${site}tool/find-my-tutor/`, lastmod: now, priority: 0.9 },
     { loc: `${site}about/`, lastmod: now, priority: 0.5 },
@@ -27,7 +33,7 @@ export const GET: APIRoute = async ({ site }) => {
 
   bestOf.forEach(b => urls.push({
     loc: `${site}best-of/${b.id}/`,
-    lastmod: now,
+    lastmod: siteLatest,
     priority: 0.8,
   }));
 
