@@ -30,12 +30,26 @@ const formatLabel: Record<string, string> = {
   in_person: 'พบหน้า', online: 'ออนไลน์', hybrid: 'Hybrid',
 };
 
-// LocalBusiness schema
+// LocalBusiness schema — use EducationalOrganization subtype for richer
+// education-vertical signals (Course/Service nested below)
+const subjectLabels: Record<string, string> = {
+  math: 'คณิตศาสตร์', science: 'วิทยาศาสตร์', physics: 'ฟิสิกส์',
+  chemistry: 'เคมี', biology: 'ชีววิทยา', english: 'ภาษาอังกฤษ',
+  thai: 'ภาษาไทย', social: 'สังคมศึกษา', iq: 'IQ/EQ', readiness: 'เตรียมความพร้อม',
+  sat: 'SAT', ielts: 'IELTS', toefl: 'TOEFL',
+};
+const knowsAbout = [
+  ...d.categories.map(c => categoryLabel[c] || c),
+  ...d.subjects.map(s => subjectLabels[s] || s),
+  ...d.target_schools,
+].filter(Boolean);
+
 const listingSchema: any = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': ['LocalBusiness', 'EducationalOrganization'],
   '@id': `https://${Astro.site?.host}/listing/${listing.id}/`,
   name: d.name_th,
+  ...(d.name_en ? { alternateName: d.name_en } : {}),
   description: d.description_th,
   address: {
     '@type': 'PostalAddress',
@@ -49,14 +63,52 @@ const listingSchema: any = {
   ...(d.email ? { email: d.email } : {}),
   ...(d.founded_year ? { foundingDate: `${d.founded_year}` } : {}),
   priceRange: { budget: '฿', mid: '฿฿', premium: '฿฿฿' }[d.pricing_tier],
+  knowsAbout,
+  areaServed: {
+    '@type': 'City',
+    name: d.city,
+    ...(d.district ? { containedInPlace: { '@type': 'AdministrativeArea', name: d.district } } : {}),
+  },
   ...(d.google_rating ? {
     aggregateRating: {
       '@type': 'AggregateRating',
       ratingValue: d.google_rating,
       reviewCount: d.google_review_count || 0,
+      bestRating: 5,
+      worstRating: 1,
     },
   } : {}),
+  hasOfferCatalog: {
+    '@type': 'OfferCatalog',
+    name: `คอร์สเรียนของ ${d.name_th}`,
+    itemListElement: d.categories.map((c) => ({
+      '@type': 'Offer',
+      itemOffered: {
+        '@type': 'Course',
+        name: `${categoryLabel[c] || c} โดย ${d.name_th}`,
+        description: `คอร์สเรียน${categoryLabel[c] || c}กับ ${d.name_th} ${d.district ? `ที่ ${d.district}` : ''} ${d.city}`,
+        provider: { '@id': `https://${Astro.site?.host}/listing/${listing.id}/` },
+        inLanguage: 'th',
+        educationalLevel: c === 'por1' ? 'ป.1' : c === 'mor1' ? 'ม.1' : c === 'mor4' ? 'ม.4' : c === 'uni' ? 'อุดมศึกษา' : 'ทุกระดับ',
+        hasCourseInstance: {
+          '@type': 'CourseInstance',
+          courseMode: d.quick_facts.format.includes('online') ? 'Online' : d.quick_facts.format.includes('hybrid') ? 'Blended' : 'Onsite',
+          inLanguage: 'th',
+        },
+      },
+    })),
+  },
 };
+
+const contactMissing = d.phone.length === 0 && !d.website && !d.line_id && !d.email;
+const sourceLabel: Record<string, string> = {
+  apify_google_maps: 'Google Maps',
+  openai_enrichment: 'ทีมงานติดฝัน (เรียบเรียง)',
+  manual: 'ทีมงานติดฝัน',
+  moe_registry: 'กระทรวงศึกษาธิการ',
+  facebook: 'Facebook Pages',
+};
+const displaySources = [...new Set(d.sources.map(s => sourceLabel[s] || s))];
 
 // Speakable schema (AEO)
 const speakableSchema = {
@@ -197,8 +249,14 @@ const faqSchema = {
         {d.website && <p><strong class="text-gray-700">เว็บไซต์:</strong> <a href={d.website} class="text-indigo-600 hover:underline" rel="noopener">{d.website}</a></p>}
         {d.email && <p><strong class="text-gray-700">Email:</strong> {d.email}</p>}
       </div>
-      <p class="text-xs text-gray-500 mt-4">ติดต่อสถาบันโดยตรงผ่านช่องทางด้านบน ติดฝันไม่เป็นตัวกลางในการสมัครเรียนหรือชำระเงิน</p>
+      <p class="text-xs text-gray-500 mt-4">ติดต่อสถาบันโดยตรงผ่านช่องทางด้านบน ติดฝันไม่เป็นตัวกลางในการสมัครเรียนหรือชำระเงิน · ค่าเรียนที่แสดงเป็นการประมาณการเบื้องต้นโดยทีมงาน และอาจไม่ตรงกับราคาจริง — โปรดติดต่อสถาบันเพื่อยืนยันราคาและรายละเอียดคอร์ส</p>
     </section>
+
+    {contactMissing && (
+      <section class="mb-8 bg-amber-50 border border-amber-200 rounded-xl p-5">
+        <p class="text-sm text-amber-900"><strong>ข้อมูลติดต่อยังไม่สมบูรณ์</strong> — เราอยู่ระหว่างยืนยันช่องทางติดต่อโดยตรงกับสถาบัน หากคุณเป็นเจ้าของหรือมีข้อมูลเพิ่มเติม <a href="/claim/" class="text-amber-700 hover:underline font-medium">ช่วยอัปเดตให้เราได้</a></p>
+      </section>
+    )}
 
     <!-- Markdown body content -->
     <section class="prose max-w-none mb-8">
@@ -210,7 +268,7 @@ const faqSchema = {
     <!-- Anti-thin / Trust footer -->
     <section class="my-8 text-xs text-gray-500 border-t border-gray-200 pt-4">
       <p>ข้อมูลอัปเดตล่าสุด: {d.data_freshness_date.toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-      <p>แหล่งข้อมูล: {d.sources.join(', ')}</p>
+      <p>แหล่งข้อมูล: {displaySources.join(', ')} · <a href="/editorial-standards/" class="text-indigo-600 hover:underline">มาตรฐานบรรณาธิการ</a></p>
       {!d.claimed && (
         <p class="mt-2">หากเป็นเจ้าของสถาบันนี้ <a href="/claim/" class="text-indigo-600 hover:underline">เคลมเพื่อปรับปรุงข้อมูล</a></p>
       )}

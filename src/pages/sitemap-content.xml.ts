@@ -16,6 +16,7 @@ export const GET: APIRoute = async ({ site }) => {
     { loc: `${site}terms/`, lastmod: now, priority: 0.3 },
     { loc: `${site}contact/`, lastmod: now, priority: 0.5 },
     { loc: `${site}claim/`, lastmod: now, priority: 0.6 },
+    { loc: `${site}editorial-standards/`, lastmod: now, priority: 0.4 },
   ];
 
   pillars.forEach(p => urls.push({

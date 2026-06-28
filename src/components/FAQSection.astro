@@ -10,19 +10,8 @@ interface Props {
 }
 
 const { title = 'คำถามที่พบบ่อย', items } = Astro.props;
-
-const schemaData = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: items.map((item) => ({
-    '@type': 'Question',
-    name: item.question,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: item.answer,
-    },
-  })),
-};
+// FAQPage JSON-LD is emitted at the page level (e.g. listing/[slug].astro)
+// to avoid duplicate-schema warnings in Google Search Console.
 ---
 
 <section class="my-12">
@@ -43,5 +32,3 @@ const schemaData = {
     ))}
   </div>
 </section>
-
-<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
