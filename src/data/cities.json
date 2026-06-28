@@ -18,5 +18,15 @@
   { "id": "nakhon-si-thammarat", "name_th": "นครศรีธรรมราช", "name_en": "Nakhon Si Thammarat", "region_th": "ภาคใต้", "description_th": "ภาคใต้ฝั่งตะวันออก มีโรงเรียนชั้นนำและสถาบันติวพร้อมรองรับการเตรียมสอบเข้ามหาวิทยาลัย", "sort": 17 },
   { "id": "phitsanulok", "name_th": "พิษณุโลก", "name_en": "Phitsanulok", "region_th": "ภาคเหนือตอนล่าง", "description_th": "ศูนย์กลางภาคเหนือตอนล่าง มีมหาวิทยาลัยนเรศวรและโรงเรียนเตรียมอุดมศึกษา ภาคเหนือตอนล่าง", "sort": 18 },
   { "id": "sakon-nakhon", "name_th": "สกลนคร", "name_en": "Sakon Nakhon", "region_th": "ภาคอีสานตอนบน", "description_th": "ศูนย์กลางภาคอีสานตอนบน มีมหาวิทยาลัยและโรงเรียนชั้นนำในเขต", "sort": 19 },
+  { "id": "chiang-rai", "name_th": "เชียงราย", "name_en": "Chiang Rai", "region_th": "ภาคเหนือ", "description_th": "ศูนย์กลางภาคเหนือสุด ใกล้แม่สาย แม่ฟ้าหลวง มีมหาวิทยาลัยและโรงเรียนชั้นนำในพื้นที่", "sort": 20 },
+  { "id": "lampang", "name_th": "ลำปาง", "name_en": "Lampang", "region_th": "ภาคเหนือ", "description_th": "ภาคเหนือฝั่งใต้ มีโรงเรียนสาธิตและสถาบันติวสำหรับครอบครัวในเขต", "sort": 21 },
+  { "id": "buri-ram", "name_th": "บุรีรัมย์", "name_en": "Buri Ram", "region_th": "ภาคอีสาน", "description_th": "ศูนย์กลางอีสานตอนล่าง มีโรงเรียนชั้นนำและสถาบันติวที่เน้นการสอบเข้าระดับชาติ", "sort": 22 },
+  { "id": "loei", "name_th": "เลย", "name_en": "Loei", "region_th": "ภาคอีสาน", "description_th": "ภาคอีสานติดชายแดน มีโรงเรียนเตรียมตัวสอบเข้าระดับประเทศ", "sort": 23 },
+  { "id": "krabi", "name_th": "กระบี่", "name_en": "Krabi", "region_th": "ภาคใต้", "description_th": "ภาคใต้ฝั่งอันดามัน มีโรงเรียนนานาชาติและสถาบันติวรองรับครอบครัวต่างชาติและคนไทย", "sort": 24 },
+  { "id": "ayutthaya", "name_th": "อยุธยา", "name_en": "Ayutthaya", "region_th": "ภาคกลาง", "description_th": "มรดกโลก ใกล้กรุงเทพ มีสถาบันติวรองรับการเตรียมสอบเข้าโรงเรียนกรุงเทพ", "sort": 25 },
+  { "id": "lopburi", "name_th": "ลพบุรี", "name_en": "Lopburi", "region_th": "ภาคกลาง", "description_th": "ภาคกลางตอนบน ใกล้มหาวิทยาลัยราชภัฏเทพสตรี มีสถาบันติวคุณภาพดี", "sort": 26 },
+  { "id": "nakhon-pathom", "name_th": "นครปฐม", "name_en": "Nakhon Pathom", "region_th": "ภาคกลาง", "description_th": "ภาคกลางตะวันตก ที่ตั้งของโรงเรียนมหิดลวิทยานุสรณ์ (MWIT) ผู้ปกครองหลายครอบครัวเตรียมลูกสอบเข้าในเขตนี้", "sort": 27 },
+  { "id": "phetchaburi", "name_th": "เพชรบุรี", "name_en": "Phetchaburi", "region_th": "ภาคกลาง", "description_th": "ภาคกลางใต้ ใกล้หัวหิน มีสถาบันติวรองรับการเตรียมสอบเข้าโรงเรียนกรุงเทพและภาคใต้", "sort": 28 },
+  { "id": "suphanburi", "name_th": "สุพรรณบุรี", "name_en": "Suphanburi", "region_th": "ภาคกลาง", "description_th": "ภาคกลางตะวันตก มีโรงเรียนสาธิตและสถาบันติวคุณภาพดี", "sort": 29 },
   { "id": "online", "name_th": "ออนไลน์", "name_en": "Online", "region_th": "ทั่วประเทศ", "description_th": "ติวเตอร์และสถาบันที่สอนออนไลน์ทั้งหมด ไม่จำกัดสถานที่ เหมาะกับครอบครัวที่ไม่สะดวกเดินทาง", "sort": 30 }
 ]

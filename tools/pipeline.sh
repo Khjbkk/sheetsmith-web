@@ -42,21 +42,43 @@ done
 mkdir -p .tmp
 
 if [ "$SKIP_SOURCE" = "0" ]; then
-  echo "═══ Phase 1: Source (Apify Google Maps) — Top-up to 300+ ═══"
-  # Untapped regions
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Phitsanulok, Thailand" --limit 10 --out .tmp/pl.csv
-  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Sakon Nakhon, Thailand" --limit 10 --out .tmp/sn.csv
-  # Online-specific (captures online-only providers missed by location queries)
-  python3 tools/source_listings.py --query "ติวออนไลน์ Zoom" --location "Bangkok, Thailand" --limit 10 --out .tmp/online.csv
-  # Niche subjects
-  python3 tools/source_listings.py --query "ติว TOEFL" --location "Bangkok, Thailand" --limit 10 --out .tmp/toefl.csv
-  python3 tools/source_listings.py --query "ติวเตรียมสอบ ก.พ." --location "Bangkok, Thailand" --limit 10 --out .tmp/kor_por.csv
-  # Level-specific deepen CM
-  python3 tools/source_listings.py --query "ติวเตอร์ ป.6" --location "Chiang Mai, Thailand" --limit 8 --out .tmp/cm_por6.csv
+  echo "═══ Phase 1: Source (Apify Google Maps) — Scale to 500+ ═══"
+  # 10 untapped regions × 8 = ~80
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Chiang Rai, Thailand" --limit 8 --out .tmp/cr.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Lampang, Thailand" --limit 8 --out .tmp/lp.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Buri Ram, Thailand" --limit 8 --out .tmp/br.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Loei, Thailand" --limit 8 --out .tmp/le.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Krabi, Thailand" --limit 8 --out .tmp/kb.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Ayutthaya, Thailand" --limit 8 --out .tmp/ay.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Lopburi, Thailand" --limit 8 --out .tmp/lb.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Nakhon Pathom, Thailand" --limit 8 --out .tmp/np.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Phetchaburi, Thailand" --limit 8 --out .tmp/pb.csv
+  python3 tools/source_listings.py --query "สถาบันกวดวิชา" --location "Suphanburi, Thailand" --limit 8 --out .tmp/sup.csv
+
+  # 5 existing-city deepen × 8 = ~40
+  python3 tools/source_listings.py --query "ติวเตอร์ ม.4" --location "Chiang Mai, Thailand" --limit 8 --out .tmp/cm_mor4.csv
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Phitsanulok, Thailand" --limit 8 --out .tmp/pl_tutor.csv
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Pattaya, Thailand" --limit 8 --out .tmp/pty_tutor.csv
+  python3 tools/source_listings.py --query "ติวเตอร์" --location "Songkhla, Thailand" --limit 8 --out .tmp/sk_tutor.csv
+  python3 tools/source_listings.py --query "ติวเตอร์ มหาวิทยาลัย" --location "Chiang Mai, Thailand" --limit 8 --out .tmp/cm_uni.csv
+
+  # 10 subject + specialty niches × 8 = ~80
+  python3 tools/source_listings.py --query "ติว GAT PAT" --location "Bangkok, Thailand" --limit 8 --out .tmp/gatpat.csv
+  python3 tools/source_listings.py --query "ติวสอบเข้าแพทย์" --location "Bangkok, Thailand" --limit 8 --out .tmp/medic.csv
+  python3 tools/source_listings.py --query "ติวพยาบาล" --location "Bangkok, Thailand" --limit 8 --out .tmp/nurse.csv
+  python3 tools/source_listings.py --query "ติวภาษาจีน" --location "Bangkok, Thailand" --limit 8 --out .tmp/chinese.csv
+  python3 tools/source_listings.py --query "ติวภาษาญี่ปุ่น" --location "Bangkok, Thailand" --limit 8 --out .tmp/japanese.csv
+  python3 tools/source_listings.py --query "ติว GED" --location "Bangkok, Thailand" --limit 8 --out .tmp/ged.csv
+  python3 tools/source_listings.py --query "ติวเขียนแบบ สถาปัตย์" --location "Bangkok, Thailand" --limit 8 --out .tmp/arch.csv
+  python3 tools/source_listings.py --query "ติวสอบเข้านายร้อย" --location "Bangkok, Thailand" --limit 8 --out .tmp/cadet.csv
+  python3 tools/source_listings.py --query "ติวอนุบาล" --location "Bangkok, Thailand" --limit 8 --out .tmp/prek.csv
+  python3 tools/source_listings.py --query "ติว A-Level" --location "Bangkok, Thailand" --limit 8 --out .tmp/alevel.csv
 
   echo "═══ Merge CSVs ═══"
-  head -1 .tmp/pl.csv > .tmp/gmaps_merged.csv
-  for f in .tmp/pl.csv .tmp/sn.csv .tmp/online.csv .tmp/toefl.csv .tmp/kor_por.csv .tmp/cm_por6.csv; do
+  head -1 .tmp/cr.csv > .tmp/gmaps_merged.csv
+  for f in .tmp/cr.csv .tmp/lp.csv .tmp/br.csv .tmp/le.csv .tmp/kb.csv .tmp/ay.csv .tmp/lb.csv .tmp/np.csv .tmp/pb.csv .tmp/sup.csv \
+           .tmp/cm_mor4.csv .tmp/pl_tutor.csv .tmp/pty_tutor.csv .tmp/sk_tutor.csv .tmp/cm_uni.csv \
+           .tmp/gatpat.csv .tmp/medic.csv .tmp/nurse.csv .tmp/chinese.csv .tmp/japanese.csv .tmp/ged.csv .tmp/arch.csv .tmp/cadet.csv .tmp/prek.csv .tmp/alevel.csv; do
     tail -n +2 "$f" >> .tmp/gmaps_merged.csv
   done
   echo "  $(wc -l < .tmp/gmaps_merged.csv) rows (incl. header)"

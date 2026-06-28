@@ -181,6 +181,26 @@ def normalize_city(raw_city: str, address: str) -> str:
         return "phitsanulok"
     if any(k in s for k in ["sakon nakhon", "สกลนคร"]):
         return "sakon-nakhon"
+    if any(k in s for k in ["chiang rai", "เชียงราย", "mae sai", "แม่สาย"]):
+        return "chiang-rai"
+    if "lampang" in s or "ลำปาง" in s:
+        return "lampang"
+    if any(k in s for k in ["buri ram", "buriram", "บุรีรัมย์"]):
+        return "buri-ram"
+    if "loei" in s or "เลย" in s:
+        return "loei"
+    if "krabi" in s or "กระบี่" in s:
+        return "krabi"
+    if any(k in s for k in ["ayutthaya", "พระนครศรีอยุธยา", "อยุธยา"]):
+        return "ayutthaya"
+    if "lopburi" in s or "ลพบุรี" in s:
+        return "lopburi"
+    if any(k in s for k in ["nakhon pathom", "นครปฐม", "salaya", "ศาลายา"]):
+        return "nakhon-pathom"
+    if "phetchaburi" in s or "เพชรบุรี" in s:
+        return "phetchaburi"
+    if "suphan" in s or "สุพรรณบุรี" in s:
+        return "suphanburi"
     return "bangkok"  # safe default
 
 
