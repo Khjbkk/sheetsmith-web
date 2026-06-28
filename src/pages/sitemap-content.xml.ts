@@ -31,7 +31,7 @@ export const GET: APIRoute = async ({ site }) => {
   }));
 
   // VS pages — must match the filter in src/pages/vs/[combo].astro
-  const MAX_VS_PER_LISTING = 20;
+  const MAX_VS_PER_LISTING = 6;
   const counts = new Map<string, number>();
   for (let i = 0; i < listings.length; i++) {
     for (let j = i + 1; j < listings.length; j++) {

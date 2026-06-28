@@ -8,7 +8,7 @@ export async function getStaticPaths() {
   // safely under the 20,000-file Cloudflare deploy cap as the listing count
   // grows. At 267 listings × 20 = 2,670 max vs pages, leaves headroom for
   // listings, pillars, vs, best-of, etc.
-  const MAX_VS_PER_LISTING = 20;
+  const MAX_VS_PER_LISTING = 6;
   const listings = await getCollection('listings');
   const pairs: { params: { combo: string }; props: any }[] = [];
   const counts = new Map<string, number>();
