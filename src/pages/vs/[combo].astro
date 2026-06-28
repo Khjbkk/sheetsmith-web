@@ -4,17 +4,33 @@ import Breadcrumb from '../../components/Breadcrumb.astro';
 import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
+  // Cap each listing to at most MAX_VS_PER_LISTING comparison pages to stay
+  // safely under the 20,000-file Cloudflare deploy cap as the listing count
+  // grows. At 267 listings × 20 = 2,670 max vs pages, leaves headroom for
+  // listings, pillars, vs, best-of, etc.
+  const MAX_VS_PER_LISTING = 20;
   const listings = await getCollection('listings');
   const pairs: { params: { combo: string }; props: any }[] = [];
+  const counts = new Map<string, number>();
 
-  // Pair listings within the same category for sensible comparisons
   for (let i = 0; i < listings.length; i++) {
     for (let j = i + 1; j < listings.length; j++) {
       const a = listings[i];
       const b = listings[j];
+      // Share at least one category
       const sharedCat = a.data.categories.find(c => b.data.categories.includes(c));
       if (!sharedCat) continue;
-      // Use alphabetical slug order so the URL is canonical
+      // Same city or shared target school (real parent-comparison intent)
+      const sameCity = a.data.city === b.data.city;
+      const sharedSchool = a.data.target_schools.some(s => b.data.target_schools.includes(s));
+      if (!sameCity && !sharedSchool) continue;
+      // Like-with-like provider type
+      if (a.data.type !== b.data.type) continue;
+      // Per-listing cap
+      if ((counts.get(a.id) || 0) >= MAX_VS_PER_LISTING) continue;
+      if ((counts.get(b.id) || 0) >= MAX_VS_PER_LISTING) continue;
+      counts.set(a.id, (counts.get(a.id) || 0) + 1);
+      counts.set(b.id, (counts.get(b.id) || 0) + 1);
       const [first, second] = a.id < b.id ? [a, b] : [b, a];
       pairs.push({
         params: { combo: `${first.id}-vs-${second.id}` },
