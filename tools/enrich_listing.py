@@ -201,6 +201,86 @@ def normalize_city(raw_city: str, address: str) -> str:
         return "phetchaburi"
     if "suphan" in s or "สุพรรณบุรี" in s:
         return "suphanburi"
+    if "trang" in s or "ตรัง" in s:
+        return "trang"
+    if "yala" in s or "ยะลา" in s:
+        return "yala"
+    if any(k in s for k in ["maha sarakham", "มหาสารคาม"]):
+        return "maha-sarakham"
+    if any(k in s for k in ["roi et", "roi-et", "ร้อยเอ็ด"]):
+        return "roi-et"
+    if "kalasin" in s or "กาฬสินธุ์" in s:
+        return "kalasin"
+    if "chaiyaphum" in s or "ชัยภูมิ" in s:
+        return "chaiyaphum"
+    if any(k in s for k in ["si sa ket", "sisaket", "ศรีสะเกษ"]):
+        return "si-sa-ket"
+    if "surin" in s or "สุรินทร์" in s:
+        return "surin"
+    if any(k in s for k in ["nakhon phanom", "นครพนม"]):
+        return "nakhon-phanom"
+    if "mukdahan" in s or "มุกดาหาร" in s:
+        return "mukdahan"
+    if "yasothon" in s or "ยโสธร" in s:
+        return "yasothon"
+    if any(k in s for k in ["nong khai", "หนองคาย"]):
+        return "nong-khai"
+    if any(k in s for k in ["bueng kan", "buengkan", "บึงกาฬ"]):
+        return "bueng-kan"
+    if any(k in s for k in ["amnat charoen", "อำนาจเจริญ"]):
+        return "amnat-charoen"
+    if any(k in s for k in ["mae hong son", "แม่ฮ่องสอน"]):
+        return "mae-hong-son"
+    if "phayao" in s or "พะเยา" in s:
+        return "phayao"
+    if " nan " in f" {s} " or "น่าน" in s:
+        return "nan"
+    if "phrae" in s or "แพร่" in s:
+        return "phrae"
+    if "uttaradit" in s or "อุตรดิตถ์" in s:
+        return "uttaradit"
+    if "sukhothai" in s or "สุโขทัย" in s:
+        return "sukhothai"
+    if any(k in s for k in [" tak ", "ตาก"]) or s.endswith(" tak") or s.startswith("tak "):
+        return "tak"
+    if any(k in s for k in ["kamphaeng phet", "กำแพงเพชร"]):
+        return "kamphaeng-phet"
+    if "phichit" in s or "พิจิตร" in s:
+        return "phichit"
+    if "phetchabun" in s or "เพชรบูรณ์" in s:
+        return "phetchabun"
+    if "saraburi" in s or "สระบุรี" in s:
+        return "saraburi"
+    if "singburi" in s or "สิงห์บุรี" in s:
+        return "singburi"
+    if any(k in s for k in ["nakhon nayok", "นครนายก"]):
+        return "nakhon-nayok"
+    if any(k in s for k in ["nakhon sawan", "นครสวรรค์"]):
+        return "nakhon-sawan"
+    if "kanchanaburi" in s or "กาญจนบุรี" in s:
+        return "kanchanaburi"
+    if "ratchaburi" in s or "ราชบุรี" in s:
+        return "ratchaburi"
+    if "chachoengsao" in s or "ฉะเชิงเทรา" in s:
+        return "chachoengsao"
+    if "chanthaburi" in s or "จันทบุรี" in s:
+        return "chanthaburi"
+    if "trat" in s or "ตราด" in s:
+        return "trat"
+    if any(k in s for k in ["sa kaeo", "sakaeo", "สระแก้ว"]):
+        return "sa-kaeo"
+    if "chumphon" in s or "ชุมพร" in s:
+        return "chumphon"
+    if "ranong" in s or "ระนอง" in s:
+        return "ranong"
+    if any(k in s for k in ["phang nga", "พังงา"]):
+        return "phang-nga"
+    if "satun" in s or "สตูล" in s:
+        return "satun"
+    if "pattani" in s or "ปัตตานี" in s:
+        return "pattani"
+    if "narathiwat" in s or "นราธิวาส" in s:
+        return "narathiwat"
     return "bangkok"  # safe default
 
 
