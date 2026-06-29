@@ -3,6 +3,26 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 
 const site = 'https://tidfun.org/';
+
+// Quiz schema mirrors the 5-step quiz UX — Google Quiz rich result eligibility
+const quizSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Quiz',
+  '@id': `${site}tool/find-my-tutor/#quiz`,
+  name: 'แบบทดสอบหาติวเตอร์ที่ใช่สำหรับลูก',
+  about: { '@type': 'Thing', name: 'การเลือกสถาบันกวดวิชาและติวเตอร์' },
+  inLanguage: 'th',
+  publisher: { '@id': `${site}#org` },
+  educationalAlignment: { '@type': 'AlignmentObject', alignmentType: 'educationalSubject', targetName: 'การเลือกสถาบันกวดวิชา' },
+  hasPart: [
+    { '@type': 'Question', name: 'ลูกของคุณจะสอบเข้าระดับไหน?', text: 'เลือกระดับชั้นที่ลูกจะสอบเข้า — ป.1 โรงเรียนสาธิต, ม.1 โรงเรียนชั้นนำ, ม.4 เตรียมอุดม/MWIT หรือมหาวิทยาลัย' },
+    { '@type': 'Question', name: 'วิชาที่ลูกต้องเสริม?', text: 'เลือกวิชาที่ลูกอ่อนสุด — คณิตศาสตร์ วิทยาศาสตร์ ภาษาอังกฤษ ภาษาไทย หรือเชาว์ปัญญา (สำหรับเตรียมสอบ ป.1)' },
+    { '@type': 'Question', name: 'พื้นที่ที่สะดวก?', text: 'เลือกจังหวัดหรือเลือก ออนไลน์ ถ้าพร้อมเรียนผ่าน Zoom' },
+    { '@type': 'Question', name: 'งบประมาณต่อเดือน?', text: 'งบประหยัด ต่ำกว่า 2,000 บาท · งบกลาง 2,000-5,000 บาท · พรีเมียม มากกว่า 5,000 บาท' },
+    { '@type': 'Question', name: 'รูปแบบการเรียนที่ชอบ?', text: 'พบหน้าครู เรียนออนไลน์ หรือดูทั้งหมด' },
+  ],
+};
+
 const howToSchema = {
   '@context': 'https://schema.org',
   '@type': 'HowTo',
@@ -32,6 +52,7 @@ const howToSchema = {
   description="ตอบคำถาม 5 ข้อ รับรายการสถาบันและติวเตอร์ที่ตรงกับลูกของคุณทันที — ฟรี ไม่ต้องลงทะเบียน"
 >
   <script type="application/ld+json" set:html={JSON.stringify(howToSchema)} />
+  <script type="application/ld+json" set:html={JSON.stringify(quizSchema)} />
 
   <div class="max-w-3xl mx-auto px-4 sm:px-6 py-8">
     <Breadcrumb items={[{ label: 'หาติวเตอร์ที่ใช่' }]} />

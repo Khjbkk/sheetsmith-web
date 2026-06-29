@@ -23,6 +23,20 @@ const relevantSchools = schools.filter(s => s.data.level === category.id).sort((
 
 // CollectionPage + ItemList + Speakable schema for the category landing
 const site = Astro.site?.toString() || 'https://tidfun.org/';
+
+// AggregateOffer derived from listings' pricing_tier — gives Google a real price range
+const tierRanges = { budget: [800, 2000], mid: [2000, 5000], premium: [5000, 15000] };
+const allLowPrices = matching.flatMap(l => tierRanges[l.data.pricing_tier as keyof typeof tierRanges] ? [tierRanges[l.data.pricing_tier as keyof typeof tierRanges][0]] : []);
+const allHighPrices = matching.flatMap(l => tierRanges[l.data.pricing_tier as keyof typeof tierRanges] ? [tierRanges[l.data.pricing_tier as keyof typeof tierRanges][1]] : []);
+const aggregateOffer = matching.length > 0 && allLowPrices.length > 0 ? {
+  '@type': 'AggregateOffer',
+  priceCurrency: 'THB',
+  lowPrice: Math.min(...allLowPrices),
+  highPrice: Math.max(...allHighPrices),
+  offerCount: matching.length,
+  availability: 'https://schema.org/InStock',
+} : null;
+
 const categorySchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -33,6 +47,7 @@ const categorySchema = {
   isPartOf: { '@id': `${site}#org` },
   about: { '@type': 'EducationalOccupationalProgram', name: category.name_th },
   speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.cat-intro'] },
+  ...(aggregateOffer ? { offers: aggregateOffer } : {}),
   mainEntity: {
     '@type': 'ItemList',
     numberOfItems: matching.length,

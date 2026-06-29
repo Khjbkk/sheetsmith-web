@@ -71,6 +71,20 @@ const cityFaqs = matching.length >= 3 ? [
 ] : [];
 
 const site = Astro.site?.toString() || 'https://tidfun.org/';
+
+// AggregateOffer — pricing range across all listings in this city
+const tierRanges = { budget: [800, 2000], mid: [2000, 5000], premium: [5000, 15000] };
+const allLowPrices = matching.flatMap(l => tierRanges[l.data.pricing_tier as keyof typeof tierRanges] ? [tierRanges[l.data.pricing_tier as keyof typeof tierRanges][0]] : []);
+const allHighPrices = matching.flatMap(l => tierRanges[l.data.pricing_tier as keyof typeof tierRanges] ? [tierRanges[l.data.pricing_tier as keyof typeof tierRanges][1]] : []);
+const cityAggregateOffer = matching.length >= 3 && allLowPrices.length > 0 ? {
+  '@type': 'AggregateOffer',
+  priceCurrency: 'THB',
+  lowPrice: Math.min(...allLowPrices),
+  highPrice: Math.max(...allHighPrices),
+  offerCount: matching.length,
+  availability: 'https://schema.org/InStock',
+} : null;
+
 const citySchema = {
   '@context': 'https://schema.org',
   '@type': 'CollectionPage',
@@ -80,6 +94,7 @@ const citySchema = {
   inLanguage: 'th',
   isPartOf: { '@id': `${site}#org` },
   speakable: { '@type': 'SpeakableSpecification', cssSelector: ['.city-intro'] },
+  ...(cityAggregateOffer ? { offers: cityAggregateOffer } : {}),
   about: {
     '@type': 'Place',
     name: city.name_th,
